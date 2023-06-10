@@ -1,23 +1,25 @@
 from fastapi import FastAPI, Form
 from typing import Annotated
-import os, uuid
+import os
+import uuid
 
 app = FastAPI()
 
 I = 0
 N = 0
 
+
 @app.post("/")
-async def posted(teplota: Annotated[str, Form()] = "None", vlhkost: Annotated[str, Form()] = "None",tlak: Annotated[str, Form()] = "None", souradnice: Annotated[str, Form()] = "None",vyska: Annotated[str, Form()] = "None", akcelerometr: Annotated[str, Form()] = "None"):
+async def posted(teplota: Annotated[str, Form()] = "None", vlhkost: Annotated[str, Form()] = "None", tlak: Annotated[str, Form()] = "None", souradnice: Annotated[str, Form()] = "None", vyska: Annotated[str, Form()] = "None", akcelerometr: Annotated[str, Form()] = "None"):
     global I
     data = {
         "tep": teplota,
-        "vl":vlhkost,
+        "vl": vlhkost,
         "tl": tlak,
         "gps": souradnice,
         "vys": vyska
-            }
-    
+    }
+
     jdata = f"{teplota}::{vlhkost}::{tlak}::{souradnice}::{vyska}"
     with open('data.cj', 'a+') as f:
         f.write(f"{I} = {jdata}\n")
@@ -28,13 +30,13 @@ async def posted(teplota: Annotated[str, Form()] = "None", vlhkost: Annotated[st
 
 
 @app.post("/tracker")
-async def posted_tracker(souradnice: Annotated[str, Form()] = "None",vyska: Annotated[str, Form()] = "None"):
+async def posted_tracker(souradnice: Annotated[str, Form()] = "None", vyska: Annotated[str, Form()] = "None"):
     global N
     data = {
         "gps": souradnice,
         "vys": vyska
-            }
-    
+    }
+
     jdata = f"{souradnice}::{vyska}"
     with open('tracker.cj', 'a+') as f:
         f.write(f"{N} = {jdata}\n")
@@ -43,7 +45,7 @@ async def posted_tracker(souradnice: Annotated[str, Form()] = "None",vyska: Anno
 
     return "OK"
 
-
+a = """
 @app.get("/")
 async def root():
     with open("data.cj", "rb") as f:
@@ -56,6 +58,13 @@ async def root():
         last_line = f.readline().decode()
 
     return last_line
+"""
+
+
+@app.get("/")
+async def root():
+    return "hello"
+
 
 @app.get("/tracker")
 async def tracker():
@@ -71,8 +80,8 @@ async def tracker():
     return last_line
 
 
-#@app.post("/custom")
-#async def custom(data: str, file: str):
+# @app.post("/custom")
+# async def custom(data: str, file: str):
 
 #    rand = uuid.uuid1()
 
