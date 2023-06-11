@@ -1,1 +1,1 @@
-0 = None::None::None::None::None
+{"height":"980.23", "speed": "78.25", "temp":"23.7", "pressure":"98.3", "op_code": 1}

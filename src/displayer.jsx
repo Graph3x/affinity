@@ -6,7 +6,7 @@ class Displayer extends Component {
 
   render() {
     return (
-        <div>
+        <div className='displayer' id={this.props.uname}>
             <h3>{this.props.value}</h3>
         </div>
     );

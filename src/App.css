@@ -6,8 +6,8 @@
 
 #body-div {
   position: absolute;
-  width: 86vw;
-  margin-left: 7vw;
+  width: 100vw;
+  margin-left: 0;
   height: 100vh;
   background-image: url('../public/template.png');
   background-size: cover;
@@ -22,13 +22,62 @@ h3{
   background-color: black;
 }
 
-#test-disp {
-  font-size: 1.8rem;
-  position: absolute;
-  top: 490px;
-  left: 330px;
-  width: 120px;
+.displayer 
+{
+  font-size: 2rem;
+  width: 195px;
   text-align: center;
-  border: yellow 2px solid;
+  /*border: yellow 2px solid;*/
   background-color: transparent;
+}
+
+#height-disp {
+  top: 600px;
+  left: 360px;
+  position: absolute;
+}
+
+#speed-disp {
+  top: 680px;
+  left: 60px;
+  position: absolute;
+}
+
+#temp-disp {
+  top: 600px;
+  left: 990px;
+  position: absolute;
+}
+
+#press-disp {
+  top: 680px;
+  left: 1290px;
+  position: absolute;
+}
+
+#time-disp {
+  top: 700px;
+  left: 670px;
+  position: absolute;
+}
+
+#time-inner{
+  font-size: 3.8rem;
+}
+
+#status-disp {
+  top: 40px;
+  left: 450px;
+  position: absolute;
+}
+
+.light{
+  width: 50px;
+  height: 50px;
+  background-color: red;
+  border-radius: 50%;
+}
+
+.c-green{
+  background-color: greenyellow;
 }
