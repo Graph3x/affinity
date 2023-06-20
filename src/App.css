@@ -81,3 +81,10 @@ h3{
 .c-green{
   background-color: greenyellow;
 }
+
+#graph {
+  position: absolute;
+  top: 100px;
+  left: 150px;
+  width: 700px;
+}

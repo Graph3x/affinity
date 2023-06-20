@@ -4,6 +4,7 @@ import websockets
 import os
 import random
 
+I = 0.5
 
 async def handle_connection(websocket):
     print('Client connected - sending data')
@@ -26,7 +27,7 @@ async def handle_connection(websocket):
 async def debug(websocket):
     print('Client connected - sending data')
 
-    data = json.dumps({"height": f"{random.randrange(0, 999)}.{random.randrange(0, 99)}", "speed": f"{random.randrange(0, 999)}.{random.randrange(0, 99)}",
+    data = json.dumps({"time": 0, "height": f"{random.randrange(0, 999)}.{random.randrange(0, 99)}", "speed": f"{random.randrange(0, 999)}.{random.randrange(0, 99)}",
                       "temp": f"{random.randrange(0, 99)}.{random.randrange(0, 9)}", "pressure": f"{random.randrange(0, 999)}.{random.randrange(0, 99)}", "op_code": 3})
     print(data)
     await websocket.send(data)
@@ -35,9 +36,14 @@ async def debug(websocket):
     # Simulated data recording
     while True:
 
-        data = json.dumps({"height": f"{random.randrange(0, 999)}.{random.randrange(0, 99)}", "speed": f"{random.randrange(0, 999)}.{random.randrange(0, 99)}",
+        global I
+
+        data = json.dumps({"time": I,"height": f"{random.randrange(0, 999)}.{random.randrange(0, 99)}", "speed": f"{random.randrange(0, 999)}.{random.randrange(0, 99)}",
                           "temp": f"{random.randrange(0, 99)}.{random.randrange(0, 9)}", "pressure": f"{random.randrange(0, 999)}.{random.randrange(0, 99)}", "op_code": 4})
         print(data)
+
+        I += 0.5
+
         await websocket.send(data)
         await asyncio.sleep(0.5)
 

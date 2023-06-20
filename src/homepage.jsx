@@ -2,13 +2,14 @@ import {React, Component} from 'react';
 import './App.css'
 import Displayer from './displayer';
 import Light from './light';
+import LineChart from './LineGraph';
 
 class Homepage extends Component {
    constructor(props) {
     super(props);
     this.state = {
       data: [],
-      seconds: -1.5,
+      seconds: -0.750
     };
   }
 
@@ -42,7 +43,7 @@ class Homepage extends Component {
   tick()
   {
     this.setState((prevState) => ({
-      seconds: prevState.seconds + 0.5,
+      seconds: prevState.seconds + 0.125,
     }));
   }
 
@@ -61,15 +62,23 @@ class Homepage extends Component {
     let padak = false;
     let dopad = false;
 
+    let labels = []
+    let data_rend = []
+
     if(this.state.data)
     {
       if(this.state.data[this.state.data.length - 1]){
+
+        labels = this.state.data.map(a => a.time.toString())
+
+        data_rend = this.state.data.map(a => parseFloat(a.height))
+
         speed = this.state.data[this.state.data.length - 1].speed
         height = this.state.data[this.state.data.length - 1].height
         temp = this.state.data[this.state.data.length - 1].temp
         pressure = this.state.data[this.state.data.length - 1].pressure
         op_code = this.state.data[this.state.data.length - 1].op_code
-        time =  `${Math.floor(Math.max(this.state.seconds, 0) / 60).toString().padStart(2, '0')}:${(Math.max(this.state.seconds, 0) % 60).toString().padStart(2, '0')}`;
+        time =  `${Math.floor(Math.max(this.state.seconds, 0) / 60).toString().padStart(2, '0')}:${(Math.floor(Math.max(this.state.seconds, 0) % 60)).toString().padStart(2, '0')}`;
         switch(op_code)
         {
           case 0:
@@ -83,7 +92,7 @@ class Homepage extends Component {
             break;
           case 3:
             status = "LAUNCH";
-            this.timerID = setInterval(() => {this.tick();}, 1000);
+            this.timerID = setInterval(() => {this.tick();}, 500);
             break;
           case 4:
             status = "IN AIR";
@@ -130,6 +139,9 @@ class Homepage extends Component {
               <div>
                 <Light/>
               </div>
+              <div>
+                <LineChart labels={labels} data={data_rend}/>
+              </div>
               
             </div>
         </div>
@@ -137,5 +149,6 @@ class Homepage extends Component {
   }
 }
 
+/*  */
 
 export default Homepage;
