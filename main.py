@@ -22,7 +22,6 @@ def struct_module(data: list) -> dict:
     }
 
 
-
 @app.post("/")
 async def posted(request: Request):
 
@@ -40,8 +39,7 @@ async def posted_tracker(request: Request):
 
     sus_data = request.headers['content-type']
 
-    data =
-    {
+    data = {
         "gps": sus_data.split(', Speed (m/s):')[0],
         "speed": sus_data.split(', Speed (m/s):')[1]
     }
