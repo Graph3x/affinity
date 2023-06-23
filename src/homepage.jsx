@@ -15,7 +15,7 @@ class Homepage extends Component {
 
   
   componentDidMount() {
-    const socket = new WebSocket('ws://localhost:8080');
+    const socket = new WebSocket('ws://109.80.17.78:40271');
 
     socket.onmessage = (event) => {
       const newData = JSON.parse(event.data);

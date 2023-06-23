@@ -1,6 +1,0 @@
-{"time": 0, "height":"980.23", "speed": "78.25", "temp":"23.7", "pressure":"98.3", "op_code": 1}{"run_time": "120251", "global_time": "0", "gps": "0", "speed": "0", "height": "0", "acc_x": "-9.49", "acc_y": "-0.86", "acc_z": "2.79", "temp": "28.24", "press": "976.07", "humid": "54.53"}
-{"run_time": "125717", "global_time": "0", "gps": "0", "speed": "0", "height": "0", "acc_x": "-9.34", "acc_y": "-1.02", "acc_z": "1.45", "temp": "28.10", "press": "976.04", "humid": "55.09"}
-{"run_time": "131158", "global_time": "0", "gps": "0", "speed": "0", "height": "0", "acc_x": "-9.14", "acc_y": "-1.65", "acc_z": "2.51", "temp": "28.03", "press": "976.06", "humid": "54.90"}
-{"run_time": "136656", "global_time": "0", "gps": "0", "speed": "0", "height": "0", "acc_x": "-9.73", "acc_y": "-1.14", "acc_z": "2.24", "temp": "27.97", "press": "976.07", "humid": "55.36"}
-{"run_time": "142105", "global_time": "0", "gps": "0", "speed": "0", "height": "0", "acc_x": "-9.18", "acc_y": "-1.53", "acc_z": "2.79", "temp": "28.03", "press": "976.04", "humid": "55.95"}
-{"run_time": "147540", "global_time": "0", "gps": "0", "speed": "0", "height": "0", "acc_x": "-8.59", "acc_y": "-3.02", "acc_z": "3.06", "temp": "28.18", "press": "976.05", "humid": "55.85"}

@@ -6,7 +6,7 @@ app = FastAPI()
 
 def struct_module(data: list) -> dict:
     return{
-        "run_time": data[0],
+        "time": data[0],
         "global_time": data[2],
         "gps": data[3],
         "speed": data[4],
@@ -15,8 +15,9 @@ def struct_module(data: list) -> dict:
         "acc_y": data[7],
         "acc_z": data[8],
         "temp": data[9],
-        "press": data[10],
-        "humid": data[11]
+        "pressure": data[10],
+        "humid": data[11],
+        "op_code": 1, #TODO
     }
 
 
