@@ -9,7 +9,7 @@
   width: 100vw;
   margin-left: 0;
   height: 100vh;
-  background-image: url('../public/template.png');
+  background-image: url('../public/template_v2.png');
   background-size: cover;
 
 }
@@ -56,7 +56,7 @@ h3{
 }
 
 #time-disp {
-  top: 700px;
+  top: 690px;
   left: 670px;
   position: absolute;
 }
@@ -72,11 +72,31 @@ h3{
 }
 
 .light{
-  width: 50px;
-  height: 50px;
+  width: 72px;
+  height: 72px;
   background-color: red;
   border-radius: 50%;
+  position: relative;
+  top: 787px;
 }
+
+
+#padak{
+  left: 540px;
+  position: absolute;
+}
+
+#sirena{
+  position: absolute;
+  left: 730px;
+}
+
+#magnet{
+  position: absolute;
+  left: 920px;
+  top: -3px;
+}
+
 
 .c-green{
   background-color: greenyellow;

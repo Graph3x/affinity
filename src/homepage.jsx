@@ -136,7 +136,13 @@ class Homepage extends Component {
               <div id='time-disp'>
                 <Displayer value={time} uname="time-inner"/>
               </div>
-              <div>
+              <div id='padak'>
+                <Light/>
+              </div>
+              <div id='sirena'>
+                <Light/>
+              </div>
+              <div id='magnet'>
                 <Light/>
               </div>
               <div>

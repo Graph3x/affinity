@@ -50,7 +50,7 @@ async def debug(websocket):
 
 async def main():
     print("Service online")
-    async with websockets.serve(handle_connection, "localhost", 8080):
+    async with websockets.serve(handle_connection, "localhost", 40271):
         await asyncio.Future()
 
 
