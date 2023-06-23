@@ -24,10 +24,13 @@ def struct_module(data: list) -> dict:
 async def posted(request: Request):
 
     sus_data = request.headers['content-type']
-
     data = struct_module(sus_data.split("|"))
 
-    print(json.dumps(data))
+    dat = json.dumps(data)
+    print(dat)
+
+    with open("data.cj", "a") as f:
+        f.writeline(dat)
 
     return "OK"
 

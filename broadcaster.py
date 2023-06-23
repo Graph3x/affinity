@@ -21,7 +21,7 @@ async def handle_connection(websocket):
         data = json.dumps(json.loads(last_line))
         print(data)
         await websocket.send(data)
-        await asyncio.sleep(2)
+        await asyncio.sleep(0.5)
 
 
 async def debug(websocket):
@@ -50,7 +50,7 @@ async def debug(websocket):
 
 async def main():
     print("Service online")
-    async with websockets.serve(debug, "localhost", 8080):
+    async with websockets.serve(handle_connection, "localhost", 8080):
         await asyncio.Future()
 
 
