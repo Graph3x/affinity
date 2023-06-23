@@ -30,7 +30,8 @@ async def posted(request: Request):
     print(dat)
 
     with open("data.cj", "a") as f:
-        f.writeline(dat)
+        f.write(dat)
+        f.write("\n")
 
     return "OK"
 
