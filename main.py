@@ -48,9 +48,9 @@ def struct_module(data: list) -> dict:
         "pressure": data[10],
         "humid": data[11],
         "op_code": 1,
-        "mag": data["magnet"],
-        "gp2": data["gps"],
-        "padak": data["padak"]
+        "mag": trac_data["magnet"],
+        "gp2": trac_data["gps"],
+        "padak": trac_data["padak"]
     }
 
 
