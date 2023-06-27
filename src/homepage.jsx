@@ -57,10 +57,9 @@ class Homepage extends Component {
     let pressure = "0";
     let status = "OFFLINE";
     let time = "00:00";
-    let motor = false;
-    let start = false;
     let padak = false;
-    let dopad = false;
+    let sirena = false;
+    let magnet = false;
 
     let labels = []
     let data_rend = []

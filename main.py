@@ -42,9 +42,13 @@ async def posted_tracker(request: Request):
 
     sus_data = request.headers['content-type']
 
+    sdata = sus_data.split('a')
+
     data = {
-        "gps": sus_data.split(', Speed (m/s):')[0],
-        "speed": sus_data.split(', Speed (m/s):')[1]
+        "gps": sdata[0],
+        "speed": sdata[1],
+        "padak": sdata[2],
+        "magnet": sdata[3]
     }
 
     print(json.dumps(data))
