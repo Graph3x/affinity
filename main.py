@@ -18,14 +18,13 @@ Launched = False
 def struct_module(data: list) -> dict:
 
     op_code = 1
-
+    global Launched
     if not Launched:
 
         if trac_data["magnet"] == "1":
             op_code = 2
         elif trac_data["magnet"] != "0":
             op_code = 3
-            global Launched
             Launched = True
     else:
         op_code = 4
