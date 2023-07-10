@@ -4,6 +4,7 @@ import Displayer from './displayer';
 import Light from './light';
 import LineChart from './LineGraph';
 
+
 class Homepage extends Component {
    constructor(props) {
     super(props);
@@ -19,7 +20,7 @@ class Homepage extends Component {
 
     socket.onmessage = (event) => {
       const newData = JSON.parse(event.data);
-      console.log(newData)
+      //console.log(newData)
       this.setState((prevState) => ({
         data: [...prevState.data, newData],
       }));
@@ -57,9 +58,9 @@ class Homepage extends Component {
     let pressure = "0";
     let status = "OFFLINE";
     let time = "00:00";
-    let padak = false;
+    let padak = "red";
     let sirena = false;
-    let magnet = false;
+    let magnet = "red";
 
     let labels = []
     let data_rend = []
@@ -68,7 +69,7 @@ class Homepage extends Component {
     {
       if(this.state.data[this.state.data.length - 1]){
 
-        labels = this.state.data.map(a => a.time.toString())
+        labels = this.state.data.map(a => Math.floor(parseInt(a.time) / 1000).toString())
 
         data_rend = this.state.data.map(a => parseFloat(a.height))
 
@@ -79,14 +80,12 @@ class Homepage extends Component {
         op_code = this.state.data[this.state.data.length - 1].op_code
         time =  `${Math.floor(Math.max(this.state.seconds, 0) / 60).toString().padStart(2, '0')}:${(Math.floor(Math.max(this.state.seconds, 0) % 60)).toString().padStart(2, '0')}`;
 
-        padak = "green"
-        if(this.state.data[this.state.data.length - 1].padak == "0"){
-          padak = "red"
+        if(this.state.data[this.state.data.length - 1].padak != "0"){
+          padak = "green";
         }
 
-        magnet = "green"
-        if(this.state.data[this.state.data.length - 1].magnet == "0"){
-          magnet = "red"
+        if(this.state.data[this.state.data.length - 1].mag != "0"){
+          magnet = "green"
         }
 
         switch(op_code)
@@ -158,13 +157,14 @@ class Homepage extends Component {
               <div>
                 <LineChart labels={labels} data={data_rend}/>
               </div>
-              
             </div>
         </div>
     );
   }
 }
 
-/*  */
+/* [527.9,527.8,527.9,527.7,527.7,527.7,527.7,526.6,526.6,526.6,526.9,526.8,526.8] 
+["599","600","601","602","603","604","828","830","831","832","833","834","834"]
+*/
 
 export default Homepage;

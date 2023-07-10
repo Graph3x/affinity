@@ -98,8 +98,12 @@ h3{
 }
 
 
-.c-green{
+.green{
   background-color: greenyellow;
+}
+
+.red {
+  background-color: red;
 }
 
 #graph {
