@@ -37,16 +37,15 @@ def struct_module(data: list) -> dict:
 
     return{
         "time": data[0],
-        "global_time": data[2],
-        "gps": data[3],
-        "speed": data[4],
-        "height": data[5],
-        "acc_x": data[6],
-        "acc_y": data[7],
-        "acc_z": data[8],
-        "temp": data[9],
-        "pressure": data[10],
-        "humid": data[11],
+        "gps": data[1],
+        "speed": data[2],
+        "height": data[3],
+        "acc_x": data[4],
+        "acc_y": data[5],
+        "acc_z": data[6],
+        "temp": data[7],
+        "pressure": data[8],
+        "humid": data[9],
         "op_code": 1,
         "mag": trac_data["magnet"],
         "gp2": trac_data["gps"],
@@ -58,7 +57,7 @@ def struct_module(data: list) -> dict:
 async def posted(request: Request):
 
     sus_data = request.headers['content-type']
-    data = struct_module(sus_data.split("|"))
+    data = struct_module(sus_data.split("e"))
 
     dat = json.dumps(data)
     print(dat)
