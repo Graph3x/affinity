@@ -73,11 +73,22 @@ class Homepage extends Component {
         data_rend = this.state.data.map(a => parseFloat(a.height))
 
         speed = this.state.data[this.state.data.length - 1].speed
-        height = this.state.data[this.state.data.length - 1].height
+        height = Math.floor(this.state.data[this.state.data.length - 1].height)
         temp = this.state.data[this.state.data.length - 1].temp
         pressure = this.state.data[this.state.data.length - 1].pressure
         op_code = this.state.data[this.state.data.length - 1].op_code
         time =  `${Math.floor(Math.max(this.state.seconds, 0) / 60).toString().padStart(2, '0')}:${(Math.floor(Math.max(this.state.seconds, 0) % 60)).toString().padStart(2, '0')}`;
+
+        padak = "green"
+        if(this.state.data[this.state.data.length - 1].padak == "0"){
+          padak = "red"
+        }
+
+        magnet = "green"
+        if(this.state.data[this.state.data.length - 1].magnet == "0"){
+          magnet = "red"
+        }
+
         switch(op_code)
         {
           case 0:
@@ -136,13 +147,13 @@ class Homepage extends Component {
                 <Displayer value={time} uname="time-inner"/>
               </div>
               <div id='padak'>
-                <Light/>
+                <Light color={padak}/>
               </div>
               <div id='sirena'>
-                <Light/>
+                <Light color={"todo?"}/>
               </div>
               <div id='magnet'>
-                <Light/>
+                <Light color={magnet}/>
               </div>
               <div>
                 <LineChart labels={labels} data={data_rend}/>
