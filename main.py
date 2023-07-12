@@ -32,7 +32,7 @@ def struct_module(data: list) -> dict:
         if trac_data["padak"] != "0":
             op_code = 5
 
-        if float(data["speed"]) < 3:
+        if float(data[2]) < 3:
             op_code = 6
 
     return{
