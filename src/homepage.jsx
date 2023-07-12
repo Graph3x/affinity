@@ -80,15 +80,15 @@ class Homepage extends Component {
         op_code = this.state.data[this.state.data.length - 1].op_code
         time =  `${Math.floor(Math.max(this.state.seconds, 0) / 60).toString().padStart(2, '0')}:${(Math.floor(Math.max(this.state.seconds, 0) % 60)).toString().padStart(2, '0')}`;
 
-        if(this.state.data[this.state.data.length - 1].padak != "0"){
+        if(this.state.data[this.state.data.length - 1].padak != "0" && this.state.data[this.state.data.length - 1].padak != "NaN"){
           padak = "green";
         }
 
-        if(this.state.data[this.state.data.length - 1].mag != "0"){
+        if(this.state.data[this.state.data.length - 1].mag != "0" && this.state.data[this.state.data.length - 1].mag != "NaN"){
           magnet = "green"
         }
 
-        if(this.state.data[this.state.data.length - 1].sirena != "0"){
+        if(this.state.data[this.state.data.length - 1].sirena != "0" && this.state.data[this.state.data.length - 1].sirena != "NaN"){
           sirena = "green"
         }
 
@@ -158,7 +158,7 @@ class Homepage extends Component {
               <div id='magnet'>
                 <Light color={magnet}/>
               </div>
-              <div>
+              <div id="chart-div">
                 <LineChart labels={labels} data={data_rend}/>
               </div>
             </div>

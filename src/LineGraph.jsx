@@ -7,7 +7,7 @@ class LineChart extends Component {
     labels: [],
     datasets: [
       {
-        label: '',
+        label: 'Sonda',
         fill: false,
         lineTension: 0.3,
         backgroundColor: 'rgba(75,192,192,1)',

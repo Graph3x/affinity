@@ -87,7 +87,7 @@ async def posted_tracker(request: Request):
 
     print(json.dumps(trac_data))
 
-    return "Okej tobajas je sus"
+    return "B"
 
 
 @app.get("/")
