@@ -59,7 +59,7 @@ class Homepage extends Component {
     let status = "OFFLINE";
     let time = "00:00";
     let padak = "red";
-    let sirena = false;
+    let sirena = "red";
     let magnet = "red";
 
     let labels = []
@@ -86,6 +86,10 @@ class Homepage extends Component {
 
         if(this.state.data[this.state.data.length - 1].mag != "0"){
           magnet = "green"
+        }
+
+        if(this.state.data[this.state.data.length - 1].sirena != "0"){
+          sirena = "green"
         }
 
         switch(op_code)
@@ -149,7 +153,7 @@ class Homepage extends Component {
                 <Light color={padak}/>
               </div>
               <div id='sirena'>
-                <Light color={"todo?"}/>
+                <Light color={sirena}/>
               </div>
               <div id='magnet'>
                 <Light color={magnet}/>
