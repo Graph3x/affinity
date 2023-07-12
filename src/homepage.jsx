@@ -4,6 +4,7 @@ import Displayer from './displayer';
 import Light from './light';
 import LineChart from './LineGraph';
 
+const OFFSET = 527;
 
 class Homepage extends Component {
    constructor(props) {
@@ -20,7 +21,7 @@ class Homepage extends Component {
 
     socket.onmessage = (event) => {
       const newData = JSON.parse(event.data);
-      //console.log(newData)
+      console.log(newData)
       this.setState((prevState) => ({
         data: [...prevState.data, newData],
       }));
@@ -65,16 +66,18 @@ class Homepage extends Component {
     let labels = []
     let data_rend = []
 
+    let display = []
+
     if(this.state.data)
     {
       if(this.state.data[this.state.data.length - 1]){
 
         labels = this.state.data.map(a => Math.floor(parseInt(a.time) / 1000).toString())
 
-        data_rend = this.state.data.map(a => parseFloat(a.height))
+        data_rend = this.state.data.map(a => parseFloat((a.height - OFFSET).toFixed(2)))
 
         speed = this.state.data[this.state.data.length - 1].speed
-        height = Math.floor(this.state.data[this.state.data.length - 1].height)
+        height = (this.state.data[this.state.data.length - 1].height - OFFSET).toFixed(2)
         temp = this.state.data[this.state.data.length - 1].temp
         pressure = this.state.data[this.state.data.length - 1].pressure
         op_code = this.state.data[this.state.data.length - 1].op_code
@@ -118,6 +121,15 @@ class Homepage extends Component {
             break;
         }
 
+        if(this.state.data.length > 2){
+          display.push(JSON.stringify(this.state.data[this.state.data.length - 3], null, 2))
+        }
+
+        if(this.state.data.length > 1){
+          display.push(JSON.stringify(this.state.data[this.state.data.length - 2], null, 2))
+        }
+
+        display.push(JSON.stringify(this.state.data[this.state.data.length - 1], null, 2))
         
       }
     }
@@ -161,6 +173,14 @@ class Homepage extends Component {
               <div id="chart-div">
                 <LineChart labels={labels} data={data_rend}/>
               </div>
+              <div id='console'>
+                <p>{display[0]}</p>
+                <br/>
+                <p>{display[1]}</p>
+                <br/>
+                <p>{display[2]}</p>
+              </div>
+
             </div>
         </div>
     );

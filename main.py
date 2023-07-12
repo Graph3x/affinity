@@ -67,7 +67,7 @@ async def posted(request: Request):
         f.write(dat)
         f.write("\n")
 
-    return "Okej Tobajasus"
+    return "OK"
 
 
 @app.post("/tracker")
@@ -87,7 +87,7 @@ async def posted_tracker(request: Request):
 
     print(json.dumps(trac_data))
 
-    return "B"
+    return "OK"
 
 
 @app.get("/")

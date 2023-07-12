@@ -113,3 +113,13 @@ h3{
   width: 700px;
   height: 340px;
 }
+
+#console{
+  color: white;
+  position: absolute;
+  max-width: 470px;
+  top: 60px;
+  left: 900px;
+  max-height: 500px;
+  font-size: 1.05rem;
+}
