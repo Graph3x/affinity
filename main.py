@@ -8,8 +8,9 @@ app = FastAPI()
 trac_data = {
     "gps": "NaN",
     "speed": "NaN",
-    "padak": "0",
-    "magnet": "0"
+    "padak": "NaN",
+    "magnet": "NaN",
+    "sirena": "NaN",
 }
 
 Launched = False
