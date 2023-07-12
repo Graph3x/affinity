@@ -6,11 +6,11 @@ app = FastAPI()
 
 # INTER ENDPOINT GLOBALS
 trac_data = {
-        "gps": "NaN",
-        "speed": "NaN",
-        "padak": "0",
-        "magnet": "0"
-    }
+    "gps": "NaN",
+    "speed": "NaN",
+    "padak": "0",
+    "magnet": "0"
+}
 
 Launched = False
 
@@ -30,10 +30,9 @@ def struct_module(data: list) -> dict:
         op_code = 4
         if trac_data["padak"] != "0":
             op_code = 5
-    
+
         if float(data["speed"]) < 3:
             op_code = 6
-
 
     return{
         "time": data[0],
@@ -49,7 +48,8 @@ def struct_module(data: list) -> dict:
         "op_code": 1,
         "mag": trac_data["magnet"],
         "gp2": trac_data["gps"],
-        "padak": trac_data["padak"]
+        "padak": trac_data["padak"],
+        "sirena": trac_data["sirena"]
     }
 
 
@@ -80,7 +80,8 @@ async def posted_tracker(request: Request):
         "gps": sdata[0],
         "speed": sdata[1],
         "padak": sdata[2],
-        "magnet": sdata[3]
+        "magnet": sdata[3],
+        "sirena": sdata[4],
     }
 
     print(json.dumps(trac_data))
