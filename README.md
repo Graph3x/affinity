@@ -1,1 +1,3 @@
-Jednoduchý program pro monitorávání rakety
+Jednoduchý program pro monitorávání rakety.
+Pouze software backendu a frontendu, source code avioniky rakety tu nenajdete.
+Raketa komunikuje s api přes HTTP, data z rakety se ukládají do data.cj, broadcaster je následně posílá přes websockets frontendu. Web má statický template (takže není responsivní, funguje pouze na Full HD monitorech). Celý software je přizpůsobený problémům které má naše avionika, takže některé věci jsou řešeny trochu pochybně...
