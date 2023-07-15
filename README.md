@@ -1,4 +1,1 @@
-python req:
-websockets
-fastapi
-uvicorn
+Jednoduchý program pro monitorávání rakety
