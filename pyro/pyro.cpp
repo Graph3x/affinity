@@ -6,22 +6,22 @@ enum {
     BLOWN
 };
 
-int PyroChannel::get_status()
+int IPyroChannel::get_status()
 {
     return status;
 }
 
-void PyroChannel::set_status(int new_status)
+void IPyroChannel::set_status(int new_status)
 {
     status = new_status;
 }
 
-int PyroChannel::blow()
+int IPyroChannel::blow()
 {
     return 1;
 }
 
-RealChannel::RealChannel(int pin) : pin{pin}
+SimpleMosfetChannel::SimpleMosfetChannel(int pin) : pin{pin}
 {
 }
 
@@ -38,7 +38,7 @@ int DummyChannel::blow()
     return 0;
 }
 
-int RealChannel::blow()
+int SimpleMosfetChannel::blow()
 {
     if (get_status() != READY)
     {

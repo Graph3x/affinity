@@ -1,6 +1,6 @@
 #pragma once
 
-class PyroChannel
+class IPyroChannel
 {
 public:
     int get_status();
@@ -11,17 +11,17 @@ private:
     int status = 0;
 };
 
-class RealChannel : public PyroChannel
+class SimpleMosfetChannel : public IPyroChannel
 {
 public:
-    RealChannel(int pin);
+    SimpleMosfetChannel(int pin);
     int blow();
 
 private:
     int pin = 0;
 };
 
-class DummyChannel : public PyroChannel
+class DummyChannel : public IPyroChannel
 {
 public:
     int blow();
