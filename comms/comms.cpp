@@ -1,7 +1,16 @@
 #include "comms.h"
+#include <HardwareSerial.h>
 #include <iostream>
 
-int DummyComms::sendData(std::string data)
+void PropagateError(String response)
+{
+    if (response != "OK")
+    {
+        Serial.println(response);
+    }
+}
+
+int DummyComms::sendData(String data)
 {
     std::cout << "->" << data << std::endl;
     return 0;
@@ -18,20 +27,36 @@ LillyGoSIM800L::LillyGoSIM800L(int rst, int pwrkey, int powerOn,
 {
 }
 
-std::string LillyGoSIM800L::waitForResponse()
+void LillyGoSIM800L::waitForResponse()
+{
+    long timeout = millis() + 5000;
+    while (millis() < timeout)
+    {
+        while (modem.available())
+        {
+            String line = modem.readStringUntil('\n');
+            line.trim();
+            if (line.length() > 0)
+            {
+                Serial.println(">> " + line);
+            }
+        }
+    }
+}
+
+String LillyGoSIM800L::waitForLine()
 {
     long timeout = millis() + 5000;
     while (millis() < timeout)
     {
         if (modem.available())
         {
-            std::string line = modem.readStringUntil('\n');
+            String line = modem.readStringUntil('\n');
             line.trim();
             if (line.length() > 0)
             {
-                Serial.println(">> " + line);
+                return line;
             }
-            break;
         }
     }
 }
@@ -41,19 +66,33 @@ int LillyGoSIM800L::powerOn()
     pinMode(powerOnPin, OUTPUT);
     digitalWrite(powerOnPin, HIGH);
 
-    pinMode(rst_pin, OUTPUT);
+    pinMode(rstPin, OUTPUT);
     digitalWrite(rstPin, HIGH);
 
-    pinMode(pwrkey_pin, OUTPUT);
+    pinMode(pwrkeyPin, OUTPUT);
     digitalWrite(pwrkeyPin, HIGH);
     delay(100);
     digitalWrite(pwrkeyPin, LOW);
     delay(1000);
     digitalWrite(pwrkeyPin, HIGH);
-    delay(2000);
+    delay(3000);
+
     modem.begin(baudRate, SERIAL_8N1, rxPin, txPin);
     modem.println("AT");
-    waitForResponse(); // TODO error handling
+    waitForResponse();
+    modem.println("ATE0");
+    waitForResponse();
+
+    delay(2000);
+
+    modem.println("AT+CGATT=1");
+    PropagateError(waitForLine());
+    modem.println("AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"");
+    PropagateError(waitForLine());
+    modem.println("AT+SAPBR=3,1,\"APN\",\"internet\"");
+    PropagateError(waitForLine());
+
+    return 0;
 }
 
 int LillyGoSIM800L::getSignalStrength()
@@ -63,43 +102,47 @@ int LillyGoSIM800L::getSignalStrength()
 
 int LillyGoSIM800L::getStatus()
 {
-    return modem.available();
+    return 0; // TODO
 }
 
 int LillyGoSIM800L::connect()
 {
-    modem.println("AT+CGATT=1");
-    waitForResponse();
-    modem.println("AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"");
-    waitForResponse();
-    modem.println("AT+SAPBR=3,1,\"APN\",\"internet\"");
-    waitForResponse();
     modem.println("AT+SAPBR=1,1");
-    waitForResponse();
+    PropagateError(waitForLine());
+
+    delay(3000);
+    return 0;
 }
 
 int LillyGoSIM800L::disconnect()
 {
-    return 0; // TODO
-}
-
-int LillyGoSIM800L::sendData(std::string data)
-{
-    //TODO -> UDP
-    modem.println("AT+HTTPINIT");
-    waitForResponse();
-    modem.println("AT+HTTPPARA=\"CID\",1");
-    waitForResponse();
-    modem.println("AT+HTTPPARA=\"URL\",\"http://iaunmpihlkraveseldwgry0el6rux0g7k.oast.fun\"");
-    waitForResponse();
-    modem.println("AT+HTTPACTION=0");
-    waitForResponse();
-    modem.println("AT+HTTPTERM");
-    waitForResponse();
+    modem.println("AT+SAPBR=0,1");
+    PropagateError(waitForLine());
     return 0;
 }
 
-int LillyGoSIM800L::asyncSendData(std::string data)
+// TODO -> UDP
+int LillyGoSIM800L::sendData(String data)
+{
+    modem.println("AT+HTTPINIT");
+    PropagateError(waitForLine());
+
+    modem.println("AT+HTTPPARA=\"CID\",1");
+    PropagateError(waitForLine());
+
+    modem.println("AT+HTTPPARA=\"URL\",\"http://iaunmpihlkraveseldwgry0el6rux0g7k.oast.fun/?data=" + data + "\"");
+    PropagateError(waitForLine());
+
+    modem.println("AT+HTTPACTION=0");
+    PropagateError(waitForLine());
+    PropagateError(waitForLine());
+
+    modem.println("AT+HTTPTERM");
+    PropagateError(waitForLine());
+    return 0;
+}
+
+int LillyGoSIM800L::asyncSendData(String data)
 {
     return 0; // TODO
 }

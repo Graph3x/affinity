@@ -1,11 +1,6 @@
 #include "pyro.h"
 #include <iostream>
 
-enum {
-    READY,
-    BLOWN
-};
-
 int IPyroChannel::getStatus()
 {
     return status;
@@ -27,7 +22,7 @@ SimpleMosfetChannel::SimpleMosfetChannel(int pin) : pin{pin}
 
 int DummyChannel::blow()
 {
-    if (getStatus() != READY)
+    if (getStatus() != pyro::READY)
     {
         return 1;
     }
@@ -40,7 +35,7 @@ int DummyChannel::blow()
 
 int SimpleMosfetChannel::blow()
 {
-    if (getStatus() != READY)
+    if (getStatus() != pyro::READY)
     {
         return 1;
     }
@@ -49,7 +44,7 @@ int SimpleMosfetChannel::blow()
     // digitalWrite(pin, HIGH);
     // TODO maybe close channel after time-out? => save channel blow time
 
-    setStatus(BLOWN);
+    setStatus(pyro::BLOWN);
 
     return 0;
 }

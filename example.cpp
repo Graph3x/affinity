@@ -1,27 +1,24 @@
-#include <iostream>
-#include <cassert>
-#include "./pyro/pyro.h"
 #include "./comms/comms.h"
 
-void run_pyro(IPyroChannel *pyro){
-    std::cout << pyro->getStatus();
-    std::cout << "\n";
-    std::cout << pyro->blow();
-    std::cout << "\n";
-    std::cout << pyro->getStatus();
-    std::cout << "\n";
+LillyGoSIM800L comms = LillyGoSIM800L();
+
+void setup() {
+  Serial.begin(115200);
+  delay(3000);
+
+  int x = comms.powerOn();
+  x = comms.connect();
+
+  Serial.println("STARTING");
+
+  for(int i = 0; i < 10; i++){
+    x = comms.sendData("asdf");
+  }
+
+  x = comms.disconnect();
+  Serial.println("DONE");
 }
 
-void run_comms(ICommunicator *comms){
-    std::string data = "Hello World!";
-    comms->sendData(data);
-}
 
-int main()
-{
-    DummyChannel pyro = DummyChannel();
-    run_pyro(&pyro);
-    LillyGoSIM800L comms = LillyGoSIM800L();
-    run_comms(&comms);
-    return 0;
+void loop() {
 }

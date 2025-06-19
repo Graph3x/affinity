@@ -1,11 +1,20 @@
 #pragma once
 
+enum pyro
+{
+    READY,
+    BLOWN,
+    LOCKED
+};
+
 class IPyroChannel
 {
 public:
     int getStatus();
-    void setStatus(int new_status);
     virtual int blow();
+
+protected:
+    void setStatus(int new_status);
 
 private:
     int status = 0;
