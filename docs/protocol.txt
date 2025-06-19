@@ -1,0 +1,3 @@
+RMTPU - Rocket Monitorng Protocol over UDP
+
+version: unsigned short (2 bytes)

@@ -9,5 +9,3 @@ NASA rules:
         value is useless.
     8. Use the preprocessor only for header files and simple macros.
     9. Limit pointer use to a single dereference, and do not use function pointers.
-    10. Compile with all possible warnings active; all warnings should then be addressed before
-        release of the software.

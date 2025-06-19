@@ -6,12 +6,12 @@ enum {
     BLOWN
 };
 
-int IPyroChannel::get_status()
+int IPyroChannel::getStatus()
 {
     return status;
 }
 
-void IPyroChannel::set_status(int new_status)
+void IPyroChannel::setStatus(int new_status)
 {
     status = new_status;
 }
@@ -27,28 +27,29 @@ SimpleMosfetChannel::SimpleMosfetChannel(int pin) : pin{pin}
 
 int DummyChannel::blow()
 {
-    if (get_status() != READY)
+    if (getStatus() != READY)
     {
         return 1;
     }
 
     std::cout << "Pyro Ejection\n";
-    set_status(BLOWN);
+    setStatus(BLOWN);
 
     return 0;
 }
 
 int SimpleMosfetChannel::blow()
 {
-    if (get_status() != READY)
+    if (getStatus() != READY)
     {
         return 1;
     }
     // TODO debug only !!!
     // pinMode(pin,OUTPUT);
     // digitalWrite(pin, HIGH);
+    // TODO maybe close channel after time-out? => save channel blow time
 
-    set_status(BLOWN);
+    setStatus(BLOWN);
 
     return 0;
 }

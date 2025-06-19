@@ -3,8 +3,8 @@
 class IPyroChannel
 {
 public:
-    int get_status();
-    void set_status(int new_status);
+    int getStatus();
+    void setStatus(int new_status);
     virtual int blow();
 
 private:
