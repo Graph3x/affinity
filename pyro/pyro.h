@@ -1,0 +1,28 @@
+#pragma once
+
+class PyroChannel
+{
+public:
+    int get_status();
+    void set_status(int new_status);
+    virtual int blow();
+
+private:
+    int status = 0;
+};
+
+class RealChannel : public PyroChannel
+{
+public:
+    RealChannel(int pin);
+    int blow();
+
+private:
+    int pin = 0;
+};
+
+class DummyChannel : public PyroChannel
+{
+public:
+    int blow();
+};
