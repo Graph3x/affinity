@@ -3,16 +3,20 @@ CXXFLAGS := -Wall -Wextra -Wpedantic -Werror -std=c++17
 
 OBJDIR   := build
 
-OBJS     := $(OBJDIR)/example.o $(OBJDIR)/comms.o $(OBJDIR)/pyro.o
+OBJS     := $(OBJDIR)/example.o $(OBJDIR)/logging.o $(OBJDIR)/comms.o
 
 all: example
 
 example: $(OBJS)
 	$(CXX) $(OBJS) -o $@
 
-$(OBJDIR)/example.o: example.cpp pyro/pyro.h
+$(OBJDIR)/example.o: example.cpp infrastructure/logging.h comms/comms.h
 	@mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -c example.cpp -o $@
+
+$(OBJDIR)/logging.o: infrastructure/logging.cpp infrastructure/logging.h
+	@mkdir -p $(OBJDIR)
+	$(CXX) $(CXXFLAGS) -c infrastructure/logging.cpp -o $@
 
 $(OBJDIR)/comms.o: comms/comms.cpp comms/comms.h
 	@mkdir -p $(OBJDIR)

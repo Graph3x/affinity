@@ -1,24 +1,38 @@
 #include "./comms/comms.h"
+#include "./infrastructure/logging.h"
 
-LillyGoSIM800L comms = LillyGoSIM800L();
+PrintLogger logger = PrintLogger();
+DummyComms comms = DummyComms(logger);
 
 void setup() {
-  Serial.begin(115200);
-  delay(3000);
 
-  int x = comms.powerOn();
-  x = comms.connect();
+  logger.logln("STARTING");
 
-  Serial.println("STARTING");
+  comms.powerOn();
+  comms.connect();
 
-  for(int i = 0; i < 10; i++){
-    x = comms.sendData("asdf");
+  logger.logln("STARTED LOOP");
+
+  // limited verze loop() funkce
+  for(int i = 0; i < 30; i++){
+    
+    //TEST EVENT LOOP
+    
+    comms.HTTPGet("http://tvojemama.com/data?=asdf");
   }
 
-  x = comms.disconnect();
-  Serial.println("DONE");
+  logger.logln("ENDING LOOP");
+
+  comms.disconnect();
+  logger.logln("END");
+
 }
 
 
 void loop() {
+}
+
+int main(){
+  setup();
+  return 0;
 }

@@ -39,9 +39,10 @@ int SimpleMosfetChannel::blow()
     {
         return 1;
     }
-    // TODO debug only !!!
-    // pinMode(pin,OUTPUT);
-    // digitalWrite(pin, HIGH);
+    
+    pinMode(pin,OUTPUT);
+    digitalWrite(pin, HIGH);
+    
     // TODO maybe close channel after time-out? => save channel blow time
 
     setStatus(pyro::BLOWN);
