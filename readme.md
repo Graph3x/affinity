@@ -1,11 +1,13 @@
-NASA rules:    
-    1. Avoid complex flow constructs, such as goto and recursion.
-    2. All loops must have fixed bounds. This prevents runaway code.
-    3. Avoid heap memory allocation after initialization.
-    4. Restrict functions to a single printed page.
-    5. Use a minimum of two runtime assertions per function.
-    6. Restrict the scope of data to the smallest possible.
-    7. Check the return value of all non-void functions, or cast to void to indicate the return
-        value is useless.
-    8. Use the preprocessor only for header files and simple macros.
-    9. Limit pointer use to a single dereference, and do not use function pointers.
+Source code used for our avionics - Work in progress.
+
+The source code loosely follows NASA Power of 10 (https://en.wikipedia.org/wiki/The_Power_of_10:_Rules_for_Developing_Safety-Critical_Code)
+
+The code uses arduino specific constructs and the following libraries:
+    - TinyGPS++.h
+    - HardwareSerial.h
+    - Wire.h
+    - Adafruit_Sensor.h
+    - Adafruit_ADXL345_U.h
+    - Adafruit_BMP280.h
+
+I hope to make this as plaftorm independend as possible and reduce the dependencies in the future.

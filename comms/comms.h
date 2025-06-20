@@ -6,6 +6,12 @@ class ICommunicator
 {
 public:
     virtual int sendData(String data) = 0;
+    virtual int powerOn();
+    virtual int getStatus();
+    virtual int connect();
+    virtual int disconnect();
+    virtual int sendData(String data);
+    virtual int asyncSendData(String data); 
 };
 
 class DummyComms : public ICommunicator
@@ -23,13 +29,11 @@ public:
     void waitForResponse();
     String waitForLine();
     int powerOn();
-    int getSignalStrength();
     int getStatus();
     int connect();
     int disconnect();
     int sendData(String data);
     int asyncSendData(String data);
-    HardwareSerial modem = HardwareSerial(1);
 
 private:
     int rstPin;
@@ -38,4 +42,5 @@ private:
     int txPin;
     int rxPin;
     int baudRate;
+    HardwareSerial modem = HardwareSerial(1);
 };

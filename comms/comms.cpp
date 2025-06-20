@@ -95,10 +95,6 @@ int LillyGoSIM800L::powerOn()
     return 0;
 }
 
-int LillyGoSIM800L::getSignalStrength()
-{
-    return 0; // TODO
-}
 
 int LillyGoSIM800L::getStatus()
 {
