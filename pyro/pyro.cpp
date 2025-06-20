@@ -1,51 +1,29 @@
 #include "pyro.h"
-#include <iostream>
+#include "../infrastructure/logging.h"
 
-int IPyroChannel::getStatus()
+DummyChannel::DummyChannel(ILogger& logger): logger{logger} {}
+
+int DummyChannel::getStatus()
 {
     return status;
 }
 
-void IPyroChannel::setStatus(int new_status)
+void DummyChannel::setStatus(int new_status)
 {
     status = new_status;
 }
 
-int IPyroChannel::blow()
-{
-    return 1;
-}
-
-SimpleMosfetChannel::SimpleMosfetChannel(int pin) : pin{pin}
-{
-}
 
 int DummyChannel::blow()
 {
     if (getStatus() != pyro::READY)
     {
-        return 1;
+        logger.logln("$ PYRO: Invalid pyro blow");
+        return -1;
     }
 
-    std::cout << "Pyro Ejection\n";
+    logger.logln("$ PYRO: EJECT!");
     setStatus(BLOWN);
 
-    return 0;
-}
-
-int SimpleMosfetChannel::blow()
-{
-    if (getStatus() != pyro::READY)
-    {
-        return 1;
-    }
-    
-    pinMode(pin,OUTPUT);
-    digitalWrite(pin, HIGH);
-    
-    // TODO maybe close channel after time-out? => save channel blow time
-
-    setStatus(pyro::BLOWN);
-
-    return 0;
+    return BLOWN;
 }

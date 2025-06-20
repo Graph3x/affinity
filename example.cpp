@@ -1,38 +1,55 @@
 #include "./comms/comms.h"
 #include "./infrastructure/logging.h"
+#include "./pyro/pyro.h"
+#include "./infrastructure/timer.h"
 
 PrintLogger logger = PrintLogger();
 DummyComms comms = DummyComms(logger);
+DummyChannel pyro = DummyChannel(logger);
+DummyTimer timer = DummyTimer();
 
-void setup() {
-
-  logger.logln("STARTING");
-
+void setup()
+{
   comms.powerOn();
   comms.connect();
+}
 
-  logger.logln("STARTED LOOP");
+void loopy()
+{
+  unsigned long tickTime = timer.getTime();
 
-  // limited verze loop() funkce
-  for(int i = 0; i < 30; i++){
-    
-    //TEST EVENT LOOP
-    
-    comms.HTTPGet("http://tvojemama.com/data?=asdf");
+  //launch conditions met
+  if(timer.timeSinceLaunch() == 0 && tickTime >= 6){
+    logger.logln("LAUNCH");
+    timer.launch();
+    //TODO unlock pyro
   }
 
-  logger.logln("ENDING LOOP");
+  if(timer.timeSinceLaunch() > 10){
+    if(pyro.getStatus() == READY){
+      pyro.blow();
+    }
+  }
+
+  //TODO async
+  comms.HTTPGet("http://tvojemama.com/data?=asdf");
+  
+}
+
+int main()
+{
+  logger.logln("STARTED SETUP");
+  setup();
+  logger.logln("ENDED SETUP");
+
+  logger.logln("STARTED LOOP");
+  for (int i = 0; i < 30; i++)
+  {
+    loopy();
+  }
+  logger.logln("ENDED LOOP");
 
   comms.disconnect();
-  logger.logln("END");
 
-}
-
-
-void loop() {
-}
-
-int main(){
-  setup();
   return 0;
 }

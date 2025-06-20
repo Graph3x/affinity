@@ -1,6 +1,13 @@
 #pragma once
 #include "../infrastructure/logging.h"
 
+enum CommsStatus{
+    OFFLINE,
+    DISCONNECTED,
+    CONNECTED,
+    BUSY
+};
+
 class ICommunicator
 {
 public:
@@ -24,5 +31,6 @@ public:
 
 private:
     ILogger& logger;
+    int status = 0;
 
 };
