@@ -13,6 +13,8 @@ class IPyroChannel
 public:
     virtual int getStatus() = 0;
     virtual int blow() = 0;
+    virtual void lock() = 0;
+    virtual void unlock() = 0;
 
 protected:
     virtual void setStatus(int new_status) = 0;
@@ -24,11 +26,13 @@ public:
     DummyChannel(ILogger &logger);
     int getStatus();
     int blow();
+    void lock();
+    void unlock();
 
 protected:
     void setStatus(int new_status);
 
 private:
-    int status = 0;
+    int status = LOCKED;
     ILogger &logger;
 };

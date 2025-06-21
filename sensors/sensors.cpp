@@ -1,5 +1,5 @@
 #include "sensors.h"
 
-int DummySensor::readValue(){
-    return 10;
+int DummyGrowingSensor::readValue(){
+    return value++;
 }

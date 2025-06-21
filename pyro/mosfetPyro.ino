@@ -29,3 +29,17 @@ int SimpleMosfetChannel::blow()
 
     return 0;
 }
+
+void SimpleMosfetChannel::lock()
+{
+    if (getStatus() == pyro::READY){
+        setStatus(LOCKED);
+    }
+}
+
+void SimpleMosfetChannel::unlock()
+{
+    if (getStatus() == pyro::LOCKED){
+        setStatus(READY);
+    }
+}

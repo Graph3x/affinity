@@ -22,7 +22,7 @@ void loopy()
   if(timer.timeSinceLaunch() == 0 && tickTime >= 6){
     logger.logln("LAUNCH");
     timer.launch();
-    //TODO unlock pyro
+    pyro.unlock();
   }
 
   if(timer.timeSinceLaunch() > 10){

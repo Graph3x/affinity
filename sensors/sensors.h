@@ -1,11 +1,12 @@
 
-
 class ISensor{
     public:
         virtual int readValue();    
 };
 
-class DummySensor : ISensor{
+class DummyGrowingSensor : ISensor{
     public:
-        int readValue();    
+        int readValue();
+    private:
+        int value = 0; 
 };

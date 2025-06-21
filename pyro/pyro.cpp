@@ -1,7 +1,7 @@
 #include "pyro.h"
 #include "../infrastructure/logging.h"
 
-DummyChannel::DummyChannel(ILogger& logger): logger{logger} {}
+DummyChannel::DummyChannel(ILogger &logger) : logger{logger} {}
 
 int DummyChannel::getStatus()
 {
@@ -12,7 +12,6 @@ void DummyChannel::setStatus(int new_status)
 {
     status = new_status;
 }
-
 
 int DummyChannel::blow()
 {
@@ -26,4 +25,18 @@ int DummyChannel::blow()
     setStatus(BLOWN);
 
     return BLOWN;
+}
+
+void DummyChannel::lock()
+{
+    if (getStatus() == pyro::READY){
+        setStatus(LOCKED);
+    }
+}
+
+void DummyChannel::unlock()
+{
+    if (getStatus() == pyro::LOCKED){
+        setStatus(READY);
+    }
 }
