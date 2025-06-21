@@ -1,5 +1,10 @@
 #include "sensors.h"
 
-int DummyGrowingSensor::readValue(){
-    return value++;
+DummyGrowingSensor::DummyGrowingSensor(int growthSpeed, int initValue)
+    : growthSpeed{growthSpeed}, value{initValue} {}
+
+int DummyGrowingSensor::readValue()
+{
+    value *= growthSpeed;
+    return value;
 }

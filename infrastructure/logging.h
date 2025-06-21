@@ -14,3 +14,10 @@ public:
     void log(const char *data);
     void logln(const char *data);
 };
+
+class DummyLogger : public ILogger
+{
+public:
+    void log(const char *data);
+    void logln(const char *data);
+};

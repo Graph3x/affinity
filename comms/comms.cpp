@@ -5,7 +5,7 @@ DummyComms::DummyComms(ILogger &logger) : logger{logger} {}
 
 int DummyComms::powerOn()
 {
-    if (status != OFFLINE)
+    if (status != OFFLINE && status != DOWN)
     {
         logger.logln("$ COMMS: [ERROR] NOT OFFLINE");
         return 1;
@@ -28,6 +28,7 @@ int DummyComms::connect()
         logger.logln("$ COMMS: [ERROR] NOT DISCONNECTED");
         return 1;
     }
+
     logger.logln("$ COMMS: CONNECT");
     status = CONNECTED;
     return 0;
@@ -53,7 +54,9 @@ int DummyComms::HTTPGet(const char *url)
         logger.logln("$ COMMS: [ERROR] NOT CONNECTED");
         return 1;
     }
+    
     logger.log("> COMMS: GET ");
     logger.logln(url);
+    
     return 0;
 }

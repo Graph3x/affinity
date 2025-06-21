@@ -24,4 +24,5 @@ private:
     int rxPin;
     int baudRate;
     HardwareSerial modem = HardwareSerial(1);
+    int status = OFFLINE;
 };

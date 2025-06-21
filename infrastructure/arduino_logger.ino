@@ -5,19 +5,20 @@ ArduinoLogger::ArduinoLogger(int autoBauds) : autoBauds{autoBauds} {}
 void ArduinoLogger::begin(int baudRate)
 {
     Serial.begin(baudRate);
+    started = true;
 }
 
 void ArduinoLogger::log(const char *data)
 {
     if (!started)
     {
-        // TODO error returns
-        if (autoBauds != 0)
+        if (autoBauds == 0)
         {
-            begin(autoBauds);
+            return;
         }
-        started = true;
+        begin(autoBauds);
     }
+
     Serial.print(data);
 }
 
@@ -25,12 +26,11 @@ void ArduinoLogger::logln(const char *data)
 {
     if (!started)
     {
-        // TODO error returns
-        if (autoBauds != 0)
+        if (autoBauds == 0)
         {
-            begin(autoBauds);
+            return;
         }
-        started = true;
+        begin(autoBauds);
     }
     Serial.println(data);
 }

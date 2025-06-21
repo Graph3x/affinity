@@ -1,12 +1,23 @@
-#include "./comms/comms.h"
-#include "./infrastructure/logging.h"
-#include "./pyro/pyro.h"
-#include "./infrastructure/timer.h"
+#include "comms/comms.h"
+#include "infrastructure/logging.h"
+#include "pyro/pyro.h"
+#include "infrastructure/timer.h"
+#include "sensors/sensors.h"
+#include "sensors/trajectory_controller.h"
+
+#include <assert.h>
 
 PrintLogger logger = PrintLogger();
+
 DummyComms comms = DummyComms(logger);
 DummyChannel pyro = DummyChannel(logger);
 DummyTimer timer = DummyTimer();
+
+DummyGrowingSensor gpsHeight = DummyGrowingSensor(2);
+DummyGrowingSensor baroHeight = DummyGrowingSensor(1, 2);
+DummyGrowingSensor accel = DummyGrowingSensor(0, 1);
+
+TrajectoryController trajectoryController = TrajectoryController(baroHeight, gpsHeight, accel);
 
 void setup()
 {
@@ -18,22 +29,40 @@ void loopy()
 {
   unsigned long tickTime = timer.getTime();
 
-  //launch conditions met
-  if(timer.timeSinceLaunch() == 0 && tickTime >= 6){
-    logger.logln("LAUNCH");
+  // TODO lauch detection pin
+  if (timer.timeSinceLaunch() == 0 && tickTime >= 6)
+  {
+    logger.logln("$ LAUNCH");
     timer.launch();
     pyro.unlock();
   }
 
-  if(timer.timeSinceLaunch() > 10){
-    if(pyro.getStatus() == READY){
+  // simulate apogee
+  if (tickTime == 15)
+  {
+    logger.logln("$ APOGEE");
+  }
+
+  // primary pyro
+  if (trajectoryController.tick() == DESCENDING)
+  {
+    assert(timer.timeSinceLaunch() != 0);
+    logger.logln("$ PRIMARY PYRO TRIGGERED");
+    pyro.blow();
+  }
+
+  // backup pyro
+  if (timer.timeSinceLaunch() > 20)
+  {
+    if (pyro.getStatus() == READY)
+    {
+      logger.logln("$ BACKUP PYRO TRIGGERED");
       pyro.blow();
     }
   }
 
-  //TODO async
-  comms.HTTPGet("http://tvojemama.com/data?=asdf");
-  
+  // TODO async and udp
+  comms.HTTPGet("http://example.com/data?=asdf");
 }
 
 int main()

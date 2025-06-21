@@ -1,11 +1,13 @@
 #pragma once
 #include "../infrastructure/logging.h"
 
-enum CommsStatus{
+enum CommsStatus
+{
     OFFLINE,
     DISCONNECTED,
     CONNECTED,
-    BUSY
+    COMMS_BUSY,
+    DOWN
 };
 
 class ICommunicator
@@ -22,7 +24,7 @@ public:
 class DummyComms : public ICommunicator
 {
 public:
-    DummyComms(ILogger& logger);
+    DummyComms(ILogger &logger);
     int powerOn();
     int getStatus();
     int connect();
@@ -30,7 +32,6 @@ public:
     int HTTPGet(const char *url);
 
 private:
-    ILogger& logger;
-    int status = 0;
-
+    ILogger &logger;
+    int status = OFFLINE;
 };

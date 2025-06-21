@@ -1,7 +1,7 @@
 #include "lillygo_sim800l.h"
 #include <cstring>
 
-
+ // TODO -> logger / handle fails
 void PropagateError(String response)
 {
     if (response != "OK")
@@ -55,8 +55,16 @@ String LillyGoSIM800L::waitForLine()
     }
 }
 
+// TODO delays
 int LillyGoSIM800L::powerOn()
 {
+
+    if (status != OFFLINE && status != DOWN)
+    {
+        Serial.println("$ COMMS: [ERROR] NOT OFFLINE");
+        return 1;
+    }
+
     pinMode(powerOnPin, OUTPUT);
     digitalWrite(powerOnPin, HIGH);
 
@@ -86,34 +94,56 @@ int LillyGoSIM800L::powerOn()
     modem.println("AT+SAPBR=3,1,\"APN\",\"internet\"");
     PropagateError(waitForLine());
 
+    status = DISCONNECTED;
     return 0;
 }
 
 int LillyGoSIM800L::getStatus()
 {
-    return 0; // TODO
+    return status;
 }
 
 int LillyGoSIM800L::connect()
 {
+    if (status != DISCONNECTED)
+    {
+        Serial.println("$ COMMS: [ERROR] NOT DISCONNECTED");
+        return 1;
+    }
+
     modem.println("AT+SAPBR=1,1");
     PropagateError(waitForLine());
 
     delay(3000);
+
+    status = CONNECTED;
     return 0;
 }
 
 int LillyGoSIM800L::disconnect()
 {
+
+    if (status != CONNECTED)
+    {
+        Serial.println("$ COMMS: [ERROR] NOT CONNECTED");
+        return 1;
+    }
+
     modem.println("AT+SAPBR=0,1");
     PropagateError(waitForLine());
+    
+    status = DISCONNECTED;
     return 0;
 }
 
-// TODO -> UDP
-int LillyGoSIM800L::HTTPGet(const char* url)
+int LillyGoSIM800L::HTTPGet(const char *url)
 {
-    //TODO return status code from response
+
+    if (status != CONNECTED)
+    {
+        Serial.println("$ COMMS: [ERROR] NOT CONNECTED");
+        return 1;
+    }
 
     modem.println("AT+HTTPINIT");
     PropagateError(waitForLine());
@@ -123,17 +153,19 @@ int LillyGoSIM800L::HTTPGet(const char* url)
 
     char httpPara[220];
     strcpy(httpPara, "AT+HTTPPARA=\"URL\",\"");
-    
-    if(strlen(url) > 220){
+
+    if (strlen(url) > 220)
+    {
         return 1;
     }
-    
+
     strcat(httpPara, url);
     strcat(httpPara, "\"");
 
     modem.println(httpPara);
     PropagateError(waitForLine());
 
+    // TODO return status code from response
     modem.println("AT+HTTPACTION=0");
     PropagateError(waitForLine());
     PropagateError(waitForLine());
@@ -142,3 +174,5 @@ int LillyGoSIM800L::HTTPGet(const char* url)
     PropagateError(waitForLine());
     return 0;
 }
+
+// TODO UDP

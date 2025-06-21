@@ -1,12 +1,16 @@
-
+#pragma once
 class ISensor{
     public:
-        virtual int readValue();    
+        virtual int readValue() = 0;
+        virtual ~ISensor() = default;
 };
 
-class DummyGrowingSensor : ISensor{
+class DummyGrowingSensor : public ISensor{
     public:
+        DummyGrowingSensor(int growthSpeed = 1, int initValue = 1);
         int readValue();
     private:
-        int value = 0; 
+        int growthSpeed;
+        int value;
+
 };

@@ -1,3 +1,4 @@
+#pragma once
 #include "timer.h"
 
 class MillisTimer: public ITimer
