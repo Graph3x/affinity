@@ -13,11 +13,16 @@ DummyComms comms = DummyComms(logger);
 DummyChannel pyro = DummyChannel(logger);
 DummyTimer timer = DummyTimer();
 
-DummyGrowingSensor gpsHeight = DummyGrowingSensor(2);
-DummyGrowingSensor baroHeight = DummyGrowingSensor(1, 2);
-DummyGrowingSensor accel = DummyGrowingSensor(0, 1);
+int heightData[] = {0, 0, 0, 0, 0, 0, 2, 5, 7, 9, 15, 20, 36, 39, 41, 42, 41, 37, 34, 31, 28, 25, 22, 19, 16, 13, 11, 8, 5, 3};
+int accelUDData[] = {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+int pinData[] = {1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-TrajectoryController trajectoryController = TrajectoryController(baroHeight, gpsHeight, accel);
+DummyArraySensor gpsHeight = DummyArraySensor(heightData, 30);
+DummyArraySensor baroHeight = DummyArraySensor(heightData, 30);
+DummyArraySensor accelUD = DummyArraySensor(accelUDData, 30);
+DummyArraySensor startPin = DummyArraySensor(pinData, 30);
+
+TrajectoryController trajectoryController = TrajectoryController(baroHeight, gpsHeight, accelUD);
 
 void setup()
 {
@@ -27,38 +32,31 @@ void setup()
 
 void loopy()
 {
-  unsigned long tickTime = timer.getTime();
+  timer.getTime();
 
-  // TODO lauch detection pin
-  if (timer.timeSinceLaunch() == 0 && tickTime >= 6)
+  if (timer.timeSinceLaunch() == 0 && startPin.readValue() == 0)
   {
     logger.logln("$ LAUNCH");
     timer.launch();
     pyro.unlock();
   }
 
-  // simulate apogee
-  if (tickTime == 15)
-  {
-    logger.logln("$ APOGEE");
-  }
+  int status = trajectoryController.tick();
+  const char *stringStatus = statusToString(status);
+  logger.logln(stringStatus);
 
   // primary pyro
-  if (trajectoryController.tick() == DESCENDING)
+  if (status == DESCENDING && pyro.getStatus() == READY)
   {
-    assert(timer.timeSinceLaunch() != 0);
     logger.logln("$ PRIMARY PYRO TRIGGERED");
     pyro.blow();
   }
 
   // backup pyro
-  if (timer.timeSinceLaunch() > 20)
+  if (timer.timeSinceLaunch() > 20 && pyro.getStatus() == READY)
   {
-    if (pyro.getStatus() == READY)
-    {
-      logger.logln("$ BACKUP PYRO TRIGGERED");
-      pyro.blow();
-    }
+    logger.logln("$ BACKUP PYRO TRIGGERED");
+    pyro.blow();
   }
 
   // TODO async and udp

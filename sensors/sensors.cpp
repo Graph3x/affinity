@@ -1,10 +1,10 @@
 #include "sensors.h"
 
-DummyGrowingSensor::DummyGrowingSensor(int growthSpeed, int initValue)
-    : growthSpeed{growthSpeed}, value{initValue} {}
+DummyArraySensor::DummyArraySensor(int *data, int dataSize)
+    : data{data}, dataSize{dataSize} {}
 
-int DummyGrowingSensor::readValue()
+int DummyArraySensor::readValue()
 {
-    value *= growthSpeed;
-    return value;
+    current++;
+    return data[current % dataSize];
 }
