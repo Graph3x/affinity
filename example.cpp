@@ -1,7 +1,7 @@
 #include "comms/comms.h"
-#include "infrastructure/logging.h"
+#include "misc/logging.h"
 #include "pyro/pyro.h"
-#include "infrastructure/timer.h"
+#include "misc/timer.h"
 #include "sensors/sensors.h"
 #include "sensors/trajectory_controller.h"
 

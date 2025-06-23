@@ -1,7 +1,7 @@
 #include "lillygo_sim800l.h"
 #include <cstring>
 
- // TODO -> logger / handle fails
+// TODO -> logger / handle fails
 void PropagateError(String response)
 {
     if (response != "OK")
@@ -131,7 +131,7 @@ int LillyGoSIM800L::disconnect()
 
     modem.println("AT+SAPBR=0,1");
     PropagateError(waitForLine());
-    
+
     status = DISCONNECTED;
     return 0;
 }
@@ -145,20 +145,19 @@ int LillyGoSIM800L::HTTPGet(const char *url)
         return 1;
     }
 
+    if (strlen(url) > 220)
+    {
+        return 1;
+    }
+
     modem.println("AT+HTTPINIT");
     PropagateError(waitForLine());
 
     modem.println("AT+HTTPPARA=\"CID\",1");
     PropagateError(waitForLine());
 
-    char httpPara[220];
+    char httpPara[250];
     strcpy(httpPara, "AT+HTTPPARA=\"URL\",\"");
-
-    if (strlen(url) > 220)
-    {
-        return 1;
-    }
-
     strcat(httpPara, url);
     strcat(httpPara, "\"");
 
@@ -175,4 +174,56 @@ int LillyGoSIM800L::HTTPGet(const char *url)
     return 0;
 }
 
-// TODO UDP
+// TODO
+int LillyGoSIM800L::connectUDP(const char *ip, const char *port)
+{
+
+    if (strlen(ip) + strlen(port) > 220)
+    {
+        return 1;
+    }
+
+    modem.println("AT+CIPSHUT");
+    waitForResponse();
+
+    modem.println("AT+CIPMUX=0");
+    waitForResponse();
+
+    modem.println("AT+CSTT=\"internet\",\"\",\"\"");
+    waitForResponse();
+
+    modem.println("AT+CIICR");
+    waitForResponse();
+
+    modem.println("AT+CIFSR");
+    waitForResponse();
+
+    char connCommand[250];
+    strcpy(connCommand, "AT+CIPSTART=\"UDP\",\"");
+    strcat(connCommand, ip);
+    strcat(connCommand, "\",\"");
+    strcat(connCommand, port);
+    strcat(connCommand, "\"");
+
+    modem.println(connCommand);
+    waitForResponse();
+
+    return 0;
+}
+
+int LillyGoSIM800L::sendUDP(const uint8_t *data, size_t length)
+{
+    modem.print("AT+CIPSEND=");
+    modem.println(length);
+    waitForResponse();
+
+    for (size_t i = 0; i < length; ++i)
+    {
+        modem.write(data[i]);
+    }
+
+    modem.write(26);
+    waitForResponse();
+
+    return 0;
+}

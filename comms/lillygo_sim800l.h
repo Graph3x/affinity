@@ -14,7 +14,9 @@ public:
     int getStatus();
     int connect();
     int disconnect();
-    int HTTPGet(const char* url);
+    int HTTPGet(const char *url);
+    int connectUDP(const char *ip, const char *port);
+    int SendUDP(const char *datagram);
 
 private:
     int rstPin;

@@ -1,5 +1,5 @@
 #include "comms.h"
-#include "../infrastructure/logging.h"
+#include "../misc/logging.h"
 
 DummyComms::DummyComms(ILogger &logger) : logger{logger} {}
 

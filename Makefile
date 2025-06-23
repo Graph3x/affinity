@@ -10,13 +10,13 @@ all: example
 example: $(OBJS)
 	$(CXX) $(OBJS) -o $@
 
-$(OBJDIR)/example.o: example.cpp infrastructure/logging.h comms/comms.h pyro/pyro.h infrastructure/timer.h sensors/sensors.h sensors/trajectory_controller.h
+$(OBJDIR)/example.o: example.cpp misc/logging.h comms/comms.h pyro/pyro.h misc/timer.h sensors/sensors.h sensors/trajectory_controller.h
 	@mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -c example.cpp -o $@
 
-$(OBJDIR)/logging.o: infrastructure/logging.cpp infrastructure/logging.h
+$(OBJDIR)/logging.o: misc/logging.cpp misc/logging.h
 	@mkdir -p $(OBJDIR)
-	$(CXX) $(CXXFLAGS) -c infrastructure/logging.cpp -o $@
+	$(CXX) $(CXXFLAGS) -c misc/logging.cpp -o $@
 
 $(OBJDIR)/comms.o: comms/comms.cpp comms/comms.h
 	@mkdir -p $(OBJDIR)
@@ -26,9 +26,9 @@ $(OBJDIR)/pyro.o: pyro/pyro.cpp pyro/pyro.h
 	@mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -c pyro/pyro.cpp -o $@
 
-$(OBJDIR)/timer.o: infrastructure/timer.cpp infrastructure/timer.h
+$(OBJDIR)/timer.o: misc/timer.cpp misc/timer.h
 	@mkdir -p $(OBJDIR)
-	$(CXX) $(CXXFLAGS) -c infrastructure/timer.cpp -o $@
+	$(CXX) $(CXXFLAGS) -c misc/timer.cpp -o $@
 
 $(OBJDIR)/trajectory_controller.o: sensors/trajectory_controller.cpp sensors/trajectory_controller.h
 	@mkdir -p $(OBJDIR)

@@ -1,5 +1,5 @@
 #pragma once
-#include "../infrastructure/logging.h"
+#include "../misc/logging.h"
 
 enum pyro
 {

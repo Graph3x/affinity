@@ -1,5 +1,5 @@
 #include "pyro.h"
-#include "../infrastructure/logging.h"
+#include "../misc/logging.h"
 
 DummyChannel::DummyChannel(ILogger &logger) : logger{logger} {}
 
