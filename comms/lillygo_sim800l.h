@@ -9,14 +9,17 @@ public:
                    int tx = 27, int rx = 26, int baudRate = 115200);
 
     void waitForResponse();
-    String waitForLine();
+    String readLine();
+    String waitForLine(int timeout = 5000);
     int powerOn();
     int getStatus();
     int connect();
     int disconnect();
     int HTTPGet(const char *url);
     int connectUDP(const char *ip, const char *port);
-    int SendUDP(const char *datagram);
+    int sendUDP(const uint8_t *data, size_t length);
+    int prepUDP(const uint8_t *data, size_t length);
+    int disconnectUDP();
 
 private:
     int rstPin;
