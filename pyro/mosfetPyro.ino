@@ -22,9 +22,6 @@ int SimpleMosfetChannel::blow()
     pinMode(pin, OUTPUT);
     digitalWrite(pin, HIGH);
 
-    // TODO maybe close channel after time-out? => save channel blow time
-    // - same for dummy ig
-
     setStatus(pyro::BLOWN);
 
     return 0;
@@ -42,4 +39,15 @@ void SimpleMosfetChannel::unlock()
     if (getStatus() == pyro::LOCKED){
         setStatus(READY);
     }
+}
+
+void SimpleMosfetChannel::off()
+{
+    if (getStatus() == pyro::BLOWN)
+    {
+        digitalWrite(pin, HIGH);
+    }
+
+    status = OFF;
+
 }

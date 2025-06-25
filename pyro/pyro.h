@@ -5,7 +5,8 @@ enum pyro
 {
     READY,
     BLOWN,
-    LOCKED
+    LOCKED,
+    OFF
 };
 
 class IPyroChannel
@@ -15,6 +16,7 @@ public:
     virtual int blow() = 0;
     virtual void lock() = 0;
     virtual void unlock() = 0;
+    virtual void off() = 0;
     virtual ~IPyroChannel() = default;
 
 protected:
@@ -29,6 +31,7 @@ public:
     int blow();
     void lock();
     void unlock();
+    void off();
 
 protected:
     void setStatus(int new_status);

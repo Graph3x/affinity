@@ -40,3 +40,14 @@ void DummyChannel::unlock()
         setStatus(READY);
     }
 }
+
+void DummyChannel::off()
+{
+    if (getStatus() != pyro::BLOWN)
+    {
+        logger.logln("$ PYRO: Invalid pyro off");
+    }
+
+    logger.logln("$ PYRO: OFF");
+    status = OFF;
+}

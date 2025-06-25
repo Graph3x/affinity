@@ -23,3 +23,14 @@ void DummyTimer::launch()
     launchTime = currentVal;
     launched = true;
 }
+
+unsigned long DummyTimer::timeSincePyro()
+{
+    return currentVal - pyroTime;
+}
+
+void DummyTimer::blowPyro()
+{
+    assert(pyroTime == 0);
+    pyroTime = currentVal;
+}

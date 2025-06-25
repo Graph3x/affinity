@@ -66,6 +66,7 @@ void loopy()
   {
     logger.logln("$ PRIMARY PYRO TRIGGERED");
     pyro.blow();
+    timer.blowPyro();
   }
 
   // backup pyro
@@ -73,6 +74,11 @@ void loopy()
   {
     logger.logln("$ BACKUP PYRO TRIGGERED");
     pyro.blow();
+    timer.blowPyro();
+  }
+
+  if(pyro.getStatus() == BLOWN && timer.timeSincePyro() > 5){
+    pyro.off();
   }
 
   if (comms.getStatus() == CONNECTED)
@@ -82,8 +88,6 @@ void loopy()
 
   else if (comms.getStatus() == UDP_READY)
   {
-    // TODO
-
     uint8_t packet[AURP_SIZE];
     unsigned long timestamp = timer.getTime();
 
@@ -91,9 +95,9 @@ void loopy()
     float pressure = 0.07;
 
     std::memcpy(&packet, &version, sizeof(uint16_t));
-    std::memcpy(&packet[4], &timestamp, sizeof(unsigned long));
-    std::memcpy(&packet[4], &timestamp, sizeof(float));
-    std::memcpy(&packet[4], &timestamp, sizeof(float));
+    std::memcpy(&packet[2], &timestamp, sizeof(unsigned long));
+    std::memcpy(&packet[10], &temperature, sizeof(float));
+    std::memcpy(&packet[14], &pressure, sizeof(float));
 
     comms.sendUDP(packet, AURP_SIZE);
   }

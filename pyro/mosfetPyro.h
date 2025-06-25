@@ -9,6 +9,7 @@ public:
     int blow();
     void lock();
     void unlock();
+    void off();
 
 protected:
     void setStatus(int new_status);

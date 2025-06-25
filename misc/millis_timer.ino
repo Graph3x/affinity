@@ -23,3 +23,14 @@ void MillisTimer::launch()
         launched = true;
     }
 }
+
+unsigned long MillisTimer::timeSincePyro()
+{
+    return currentVal - pyroTime;
+}
+
+void MillisTimer::blowPyro()
+{
+    assert(pyroTime == 0);
+    pyroTime = currentVal;
+}
