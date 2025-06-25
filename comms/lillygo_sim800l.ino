@@ -1,7 +1,7 @@
 #include "lillygo_sim800l.h"
 #include <cstring>
 
-// TODO -> logger / handle fails
+// TODO -> logger + handle fails
 void PropagateError(String response, String expected = "OK")
 {
     if (response != expected)

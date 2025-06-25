@@ -1,4 +1,31 @@
-RMTPU - Rocket Monitorng Protocol over UDP
+AURP - Affinity UDP Rocket Protocol
 
-version: unsigned short (2 bytes)
-TODO
+    version: ushort (2 bytes)
+    vehicle_id: ulong (4 bytes)
+    timestamp: ulong (4 bytes)
+
+    temperature: float (4 bytes)
+    pressure: float (4 bytes)
+
+    accel_x: float/double? (4 bytes)
+    accel_y: float/double? (4 bytes)
+    accel_z: float/double? (4 bytes)
+
+    gps_sat_count: double (8 bytes)
+    gps_lat: double (8 bytes)
+    gps_lon: double (8 bytes)
+    gps_height: u32 (8 bytes)
+
+    comms: uint8 (1 byte)
+    pyro: uint8 (1 byte)
+    launch_pin: uint8 (1 byte)
+    trajectory: uint8 (1 byte)
+
+    66 bytes per packet
+
+
+MAURP - Multiple AURP
+    useful when limited by GSM etc.
+        
+    5 packets chained together
+    TODO bytes per packet -> should be ok 

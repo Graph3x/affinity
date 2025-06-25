@@ -15,6 +15,7 @@ public:
     virtual int blow() = 0;
     virtual void lock() = 0;
     virtual void unlock() = 0;
+    virtual ~IPyroChannel() = default;
 
 protected:
     virtual void setStatus(int new_status) = 0;

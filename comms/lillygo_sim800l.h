@@ -2,7 +2,7 @@
 #include <HardwareSerial.h>
 #include "comms.h"
 
-class LillyGoSIM800L : public PropagateErrorICommunicator
+class LillyGoSIM800L : public ICommunicator
 {
 public:
     LillyGoSIM800L(int rst = 5, int pwrkey = 4, int powerOn = 23,

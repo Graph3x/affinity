@@ -6,6 +6,7 @@ public:
     virtual unsigned long getTime() = 0;
     virtual unsigned long timeSinceLaunch() = 0;
     virtual void launch() = 0;
+    virtual ~ITimer() = default;
 };
 
 class DummyTimer: public ITimer

@@ -6,6 +6,13 @@
 #include "sensors/trajectory_controller.h"
 
 #include <assert.h>
+#include <cstring>
+#include <cstdint>
+
+#define AURP_VERSION 1
+#define AURP_SIZE 18
+
+const uint16_t version = 71;
 
 PrintLogger logger = PrintLogger();
 
@@ -26,11 +33,13 @@ TrajectoryController trajectoryController = TrajectoryController(baroHeight, gps
 
 void setup()
 {
-  while(comms.getStatus() != DISCONNECTED){
+  while (comms.getStatus() != DISCONNECTED)
+  {
     comms.powerOn();
   }
-  
-  while(comms.getStatus() != CONNECTED){
+
+  while (comms.getStatus() != CONNECTED)
+  {
     comms.connect();
   }
 
@@ -68,13 +77,25 @@ void loopy()
 
   if (comms.getStatus() == CONNECTED)
   {
-    comms.prepUDP(2); // TODO real packet size
+    comms.prepUDP(AURP_SIZE);
   }
 
   else if (comms.getStatus() == UDP_READY)
   {
-    uint8_t msg[] = {'A', 'B'};
-    comms.sendUDP(msg, 2); // TODO real packet and size
+    // TODO
+
+    uint8_t packet[AURP_SIZE];
+    unsigned long timestamp = timer.getTime();
+
+    float temperature = 0.07;
+    float pressure = 0.07;
+
+    std::memcpy(&packet, &version, sizeof(uint16_t));
+    std::memcpy(&packet[4], &timestamp, sizeof(unsigned long));
+    std::memcpy(&packet[4], &timestamp, sizeof(float));
+    std::memcpy(&packet[4], &timestamp, sizeof(float));
+
+    comms.sendUDP(packet, AURP_SIZE);
   }
 }
 
