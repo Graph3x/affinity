@@ -26,8 +26,15 @@ TrajectoryController trajectoryController = TrajectoryController(baroHeight, gps
 
 void setup()
 {
-  comms.powerOn();
-  comms.connect();
+  while(comms.getStatus() != DISCONNECTED){
+    comms.powerOn();
+  }
+  
+  while(comms.getStatus() != CONNECTED){
+    comms.connect();
+  }
+
+  comms.connectUDP("", "");
 }
 
 void loopy()
@@ -59,8 +66,16 @@ void loopy()
     pyro.blow();
   }
 
-  // TODO async and udp
-  comms.HTTPGet("http://example.com/data?=asdf");
+  if (comms.getStatus() == CONNECTED)
+  {
+    comms.prepUDP(2); // TODO real packet size
+  }
+
+  else if (comms.getStatus() == UDP_READY)
+  {
+    uint8_t msg[] = {'A', 'B'};
+    comms.sendUDP(msg, 2); // TODO real packet and size
+  }
 }
 
 int main()

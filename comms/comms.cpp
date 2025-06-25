@@ -18,6 +18,14 @@ int DummyComms::powerOn()
 
 int DummyComms::getStatus()
 {
+    if(status == COMMS_BUSY){
+        status = CONNECTED;
+    }
+
+    else if(status == PREPPING_UDP){
+        status = UDP_READY;
+    }
+
     return status;
 }
 
@@ -54,9 +62,71 @@ int DummyComms::HTTPGet(const char *url)
         logger.logln("$ COMMS: [ERROR] NOT CONNECTED");
         return 1;
     }
-    
+
     logger.log("> COMMS: GET ");
     logger.logln(url);
-    
+
+    return 0;
+}
+
+int DummyComms::connectUDP(const char *ip, const char *port)
+{
+    if (status != CONNECTED)
+    {
+        logger.logln("$ COMMS: [ERROR] NOT CONNECTED");
+        return 1;
+    }
+    logger.log("> COMMS: UDP connected to ");
+    logger.log(ip);
+    logger.log(":");
+    logger.logln(port);
+
+    return 0;
+}
+
+int DummyComms::sendUDP(const uint8_t *data, size_t length)
+{
+    if (status != UDP_READY)
+    {
+        logger.logln("$ COMMS: [ERROR] NOT CONNECTED");
+        return 1;
+    }
+
+    logger.logln("> COMMS: send packet");
+
+    (void)data;
+    (void)length;
+
+    status = CONNECTED;
+    return 0;
+}
+
+int DummyComms::prepUDP(size_t length)
+{
+    if (status != CONNECTED)
+    {
+        logger.logln("$ COMMS: [ERROR] NOT CONNECTED");
+        return 1;
+    }
+
+        (void)length; //TODO use this to check the data supplied in send
+
+        logger.logln("> COMMS: UDP prepped");
+
+    status = PREPPING_UDP;
+
+    return 0;
+}
+
+int DummyComms::disconnectUDP()
+{
+    if (status != CONNECTED)
+    {
+        logger.logln("$ COMMS: [ERROR] NOT CONNECTED");
+        return 1;
+    }
+
+    logger.logln("> COMMS: UDP disconnected");
+
     return 0;
 }

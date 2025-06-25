@@ -3,3 +3,4 @@ build/*
 todo.txt
 message.ino
 example
+ui/basic_backend/affinity.db

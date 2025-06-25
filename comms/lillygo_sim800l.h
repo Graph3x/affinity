@@ -2,7 +2,7 @@
 #include <HardwareSerial.h>
 #include "comms.h"
 
-class LillyGoSIM800L : public ICommunicator
+class LillyGoSIM800L : public PropagateErrorICommunicator
 {
 public:
     LillyGoSIM800L(int rst = 5, int pwrkey = 4, int powerOn = 23,
@@ -10,7 +10,7 @@ public:
 
     void waitForResponse();
     String readLine();
-    String waitForLine(int timeout = 5000);
+    String waitForLine(long timeout = 5000);
     int powerOn();
     int getStatus();
     int connect();
@@ -18,7 +18,7 @@ public:
     int HTTPGet(const char *url);
     int connectUDP(const char *ip, const char *port);
     int sendUDP(const uint8_t *data, size_t length);
-    int prepUDP(const uint8_t *data, size_t length);
+    int prepUDP(size_t length);
     int disconnectUDP();
 
 private:

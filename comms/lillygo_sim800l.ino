@@ -2,9 +2,9 @@
 #include <cstring>
 
 // TODO -> logger / handle fails
-void PropagateError(String response)
+void PropagateError(String response, String expected = "OK")
 {
-    if (response != "OK")
+    if (response != expected)
     {
         Serial.println(response);
     }
@@ -64,11 +64,11 @@ String LillyGoSIM800L::waitForLine(long timeout)
     return "";
 }
 
-// TODO delays
+// TODO lower delays?
 int LillyGoSIM800L::powerOn()
 {
 
-    if (status != OFFLINE && status != DOWN)
+    if (getStatus() != OFFLINE && getStatus() != DOWN)
     {
         Serial.println("$ COMMS: [ERROR] NOT OFFLINE");
         return 1;
@@ -109,17 +109,24 @@ int LillyGoSIM800L::powerOn()
 
 int LillyGoSIM800L::getStatus()
 {
-    if(status == BUSY){
+    if(status == COMMS_BUSY){
         if(readLine() != ""){
             status = CONNECTED;
         }
     }
+
+    if(status == PREPPING_UDP){
+        if(readLine() == ">"){
+            status = UDP_READY;
+        }
+    }
+
     return status;
 }
 
 int LillyGoSIM800L::connect()
 {
-    if (status != DISCONNECTED)
+    if (getStatus() != DISCONNECTED)
     {
         Serial.println("$ COMMS: [ERROR] NOT DISCONNECTED");
         return 1;
@@ -137,7 +144,7 @@ int LillyGoSIM800L::connect()
 int LillyGoSIM800L::disconnect()
 {
 
-    if (status != CONNECTED)
+    if (getStatus() != CONNECTED)
     {
         Serial.println("$ COMMS: [ERROR] NOT CONNECTED");
         return 1;
@@ -156,7 +163,7 @@ int LillyGoSIM800L::disconnect()
 int LillyGoSIM800L::HTTPGet(const char *url)
 {
 
-    if (status != CONNECTED)
+    if (getStatus() != CONNECTED)
     {
         Serial.println("$ COMMS: [ERROR] NOT CONNECTED");
         return 1;
@@ -194,7 +201,7 @@ int LillyGoSIM800L::HTTPGet(const char *url)
 int LillyGoSIM800L::connectUDP(const char *ip, const char *port)
 {
 
-    if (status != CONNECTED)
+    if (getStatus() != CONNECTED)
     {
         return 1;
     }
@@ -238,16 +245,24 @@ int LillyGoSIM800L::disconnectUDP()
     return 0;
 }
 
-int LillyGoSIM800L::prepUDP(const uint8_t *data, size_t length)
+int LillyGoSIM800L::prepUDP(size_t length)
 {
+    if(getStatus() != CONNECTED){
+        return 1;
+    }
+
     modem.print("AT+CIPSEND=");
     modem.println(length);
-    status = COMMS_BUSY;
+    status = PREPPING_UDP;
     return 0;
 }
 
 int LillyGoSIM800L::sendUDP(const uint8_t *data, size_t length)
 {
+    if(getStatus() != UDP_READY){
+        return 1;
+    }
+
     for (size_t i = 0; i < length; ++i)
     {
         modem.write(data[i]);
@@ -257,5 +272,6 @@ int LillyGoSIM800L::sendUDP(const uint8_t *data, size_t length)
     if(waitForLine(20) == ""){
         status = COMMS_BUSY;
     };
+    status = CONNECTED;
     return 0;
 }

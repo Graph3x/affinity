@@ -1,7 +1,4 @@
-The sim800l with the current setup can send 50 HTTP GET requests in around 35s
-with 100% success rate.
-
-
 RMTPU - Rocket Monitorng Protocol over UDP
 
 version: unsigned short (2 bytes)
+TODO
