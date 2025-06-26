@@ -21,6 +21,8 @@ public:
     int prepUDP(size_t length);
     int disconnectUDP();
 
+    String ipAddr = "";
+
 private:
     int rstPin;
     int pwrkeyPin;

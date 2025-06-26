@@ -64,7 +64,6 @@ String LillyGoSIM800L::waitForLine(long timeout)
     return "";
 }
 
-// TODO lower delays?
 int LillyGoSIM800L::powerOn()
 {
 
@@ -90,11 +89,17 @@ int LillyGoSIM800L::powerOn()
 
     modem.begin(baudRate, SERIAL_8N1, rxPin, txPin);
     modem.println("AT");
-    waitForResponse();
-    modem.println("ATE0");
-    waitForResponse();
+    PropagateError(waitForLine(), "AT");
+    PropagateError(waitForLine());
+    PropagateError(waitForLine(), "+CPIN: READY");
+    PropagateError(waitForLine(), "Call Ready");
+    PropagateError(waitForLine(), "SMS Ready");
 
-    delay(2000);
+    modem.println("ATE0");
+    PropagateError(waitForLine(), "ATE0");
+    PropagateError(waitForLine());
+
+    delay(5000);
 
     modem.println("AT+CGATT=1");
     PropagateError(waitForLine());
@@ -109,14 +114,18 @@ int LillyGoSIM800L::powerOn()
 
 int LillyGoSIM800L::getStatus()
 {
-    if(status == COMMS_BUSY){
-        if(readLine() != ""){
+    if (status == COMMS_BUSY)
+    {
+        if (readLine() != "")
+        {
             status = CONNECTED;
         }
     }
 
-    if(status == PREPPING_UDP){
-        if(readLine() == ">"){
+    if (status == PREPPING_UDP)
+    {
+        if (readLine() == ">")
+        {
             status = UDP_READY;
         }
     }
@@ -151,7 +160,7 @@ int LillyGoSIM800L::disconnect()
     }
 
     modem.println("AT+CIPSHUT");
-    PropagateError(waitForLine());
+    PropagateError(waitForLine(), "SHUT OK");
 
     modem.println("AT+SAPBR=0,1");
     PropagateError(waitForLine());
@@ -211,7 +220,7 @@ int LillyGoSIM800L::connectUDP(const char *ip, const char *port)
     }
 
     modem.println("AT+CIPSHUT");
-    PropagateError(waitForLine());
+    PropagateError(waitForLine(), "SHUT OK");
 
     modem.println("AT+CIPMUX=0");
     PropagateError(waitForLine());
@@ -223,7 +232,7 @@ int LillyGoSIM800L::connectUDP(const char *ip, const char *port)
     PropagateError(waitForLine());
 
     modem.println("AT+CIFSR");
-    PropagateError(waitForLine());
+    ipAddr = waitForLine();
 
     char connCommand[250];
     strcpy(connCommand, "AT+CIPSTART=\"UDP\",\"");
@@ -233,7 +242,8 @@ int LillyGoSIM800L::connectUDP(const char *ip, const char *port)
     strcat(connCommand, "\"");
 
     modem.println(connCommand);
-    waitForResponse();
+    PropagateError(waitForLine());
+    PropagateError(waitForLine(), "CONNECT OK");
     return 0;
 }
 
@@ -246,7 +256,8 @@ int LillyGoSIM800L::disconnectUDP()
 
 int LillyGoSIM800L::prepUDP(size_t length)
 {
-    if(getStatus() != CONNECTED){
+    if (getStatus() != CONNECTED)
+    {
         return 1;
     }
 
@@ -260,7 +271,8 @@ int LillyGoSIM800L::prepUDP(size_t length)
 
 int LillyGoSIM800L::sendUDP(const uint8_t *data)
 {
-    if(getStatus() != UDP_READY){
+    if (getStatus() != UDP_READY)
+    {
         return 1;
     }
 
@@ -270,7 +282,8 @@ int LillyGoSIM800L::sendUDP(const uint8_t *data)
     }
 
     modem.write(26);
-    if(waitForLine(20) == ""){
+    if (waitForLine(20) == "")
+    {
         status = COMMS_BUSY;
     };
     status = CONNECTED;

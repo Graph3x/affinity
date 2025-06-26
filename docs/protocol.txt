@@ -28,4 +28,4 @@ MAURP - Multiple AURP
     useful when limited by GSM etc.
         
     5 packets chained together
-    TODO bytes per packet -> should be ok 
+    330 bytes per packet -> should be ok 
