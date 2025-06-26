@@ -188,14 +188,13 @@ int LillyGoSIM800L::HTTPGet(const char *url)
     modem.println(httpPara);
     PropagateError(waitForLine());
 
-    // TODO return status code from response
     modem.println("AT+HTTPACTION=0");
     PropagateError(waitForLine());
-    PropagateError(waitForLine());
+    String response = waitForLine().substring(15, 18);
 
     modem.println("AT+HTTPTERM");
     PropagateError(waitForLine());
-    return 0;
+    return response.toInt();
 }
 
 int LillyGoSIM800L::connectUDP(const char *ip, const char *port)

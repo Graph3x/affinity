@@ -66,7 +66,7 @@ int DummyComms::HTTPGet(const char *url)
     logger.log("> COMMS: GET ");
     logger.logln(url);
 
-    return 0;
+    return 200;
 }
 
 int DummyComms::connectUDP(const char *ip, const char *port)
