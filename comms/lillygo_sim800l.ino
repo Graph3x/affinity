@@ -1,12 +1,15 @@
 #include "lillygo_sim800l.h"
 #include <cstring>
 
-// TODO -> logger + handle fails
-void PropagateError(String response, String expected = "OK")
+// TODO actual solid system to recover from failiures.
+void LillyGoSIM800L::CheckResponse(String response, String expected)
 {
     if (response != expected)
     {
-        Serial.println(response);
+        if (commsDebug)
+        {
+            Serial.println(response);
+        }
     }
 }
 
@@ -19,23 +22,6 @@ LillyGoSIM800L::LillyGoSIM800L(int rst, int pwrkey, int powerOn,
       rxPin{rx},
       baudRate{baudRate}
 {
-}
-
-void LillyGoSIM800L::waitForResponse()
-{
-    long timeout = millis() + 5000;
-    while (millis() < timeout)
-    {
-        while (modem.available())
-        {
-            String line = modem.readStringUntil('\n');
-            line.trim();
-            if (line.length() > 0)
-            {
-                Serial.println(">> " + line);
-            }
-        }
-    }
 }
 
 String LillyGoSIM800L::readLine()
@@ -67,7 +53,7 @@ String LillyGoSIM800L::waitForLine(long timeout)
 int LillyGoSIM800L::powerOn()
 {
 
-    if (getStatus() != OFFLINE && getStatus() != DOWN)
+    if (getStatus() != OFFLINE)
     {
         Serial.println("$ COMMS: [ERROR] NOT OFFLINE");
         return 1;
@@ -89,24 +75,24 @@ int LillyGoSIM800L::powerOn()
 
     modem.begin(baudRate, SERIAL_8N1, rxPin, txPin);
     modem.println("AT");
-    PropagateError(waitForLine(), "AT");
-    PropagateError(waitForLine());
-    PropagateError(waitForLine(), "+CPIN: READY");
-    PropagateError(waitForLine(), "Call Ready");
-    PropagateError(waitForLine(), "SMS Ready");
+    CheckResponse(waitForLine(), "AT");
+    CheckResponse(waitForLine());
+    CheckResponse(waitForLine(), "+CPIN: READY");
+    CheckResponse(waitForLine(), "Call Ready");
+    CheckResponse(waitForLine(), "SMS Ready");
 
     modem.println("ATE0");
-    PropagateError(waitForLine(), "ATE0");
-    PropagateError(waitForLine());
+    CheckResponse(waitForLine(), "ATE0");
+    CheckResponse(waitForLine());
 
     delay(5000);
 
     modem.println("AT+CGATT=1");
-    PropagateError(waitForLine());
+    CheckResponse(waitForLine());
     modem.println("AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"");
-    PropagateError(waitForLine());
+    CheckResponse(waitForLine());
     modem.println("AT+SAPBR=3,1,\"APN\",\"internet\"");
-    PropagateError(waitForLine());
+    CheckResponse(waitForLine());
 
     status = DISCONNECTED;
     return 0;
@@ -142,7 +128,7 @@ int LillyGoSIM800L::connect()
     }
 
     modem.println("AT+SAPBR=1,1");
-    PropagateError(waitForLine());
+    CheckResponse(waitForLine());
 
     delay(3000);
 
@@ -160,10 +146,10 @@ int LillyGoSIM800L::disconnect()
     }
 
     modem.println("AT+CIPSHUT");
-    PropagateError(waitForLine(), "SHUT OK");
+    CheckResponse(waitForLine(), "SHUT OK");
 
     modem.println("AT+SAPBR=0,1");
-    PropagateError(waitForLine());
+    CheckResponse(waitForLine());
 
     status = DISCONNECTED;
     return 0;
@@ -184,10 +170,10 @@ int LillyGoSIM800L::HTTPGet(const char *url)
     }
 
     modem.println("AT+HTTPINIT");
-    PropagateError(waitForLine());
+    CheckResponse(waitForLine());
 
     modem.println("AT+HTTPPARA=\"CID\",1");
-    PropagateError(waitForLine());
+    CheckResponse(waitForLine());
 
     char httpPara[250];
     strcpy(httpPara, "AT+HTTPPARA=\"URL\",\"");
@@ -195,14 +181,14 @@ int LillyGoSIM800L::HTTPGet(const char *url)
     strcat(httpPara, "\"");
 
     modem.println(httpPara);
-    PropagateError(waitForLine());
+    CheckResponse(waitForLine());
 
     modem.println("AT+HTTPACTION=0");
-    PropagateError(waitForLine());
+    CheckResponse(waitForLine());
     String response = waitForLine().substring(15, 18);
 
     modem.println("AT+HTTPTERM");
-    PropagateError(waitForLine());
+    CheckResponse(waitForLine());
     return response.toInt();
 }
 
@@ -220,16 +206,16 @@ int LillyGoSIM800L::connectUDP(const char *ip, const char *port)
     }
 
     modem.println("AT+CIPSHUT");
-    PropagateError(waitForLine(), "SHUT OK");
+    CheckResponse(waitForLine(), "SHUT OK");
 
     modem.println("AT+CIPMUX=0");
-    PropagateError(waitForLine());
+    CheckResponse(waitForLine());
 
     modem.println("AT+CSTT=\"internet\",\"\",\"\"");
-    PropagateError(waitForLine());
+    CheckResponse(waitForLine());
 
     modem.println("AT+CIICR");
-    PropagateError(waitForLine());
+    CheckResponse(waitForLine());
 
     modem.println("AT+CIFSR");
     ipAddr = waitForLine();
@@ -242,8 +228,8 @@ int LillyGoSIM800L::connectUDP(const char *ip, const char *port)
     strcat(connCommand, "\"");
 
     modem.println(connCommand);
-    PropagateError(waitForLine());
-    PropagateError(waitForLine(), "CONNECT OK");
+    CheckResponse(waitForLine());
+    CheckResponse(waitForLine(), "CONNECT OK");
     return 0;
 }
 

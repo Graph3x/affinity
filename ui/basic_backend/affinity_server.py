@@ -60,7 +60,6 @@ class UDPServerProtocol(asyncio.DatagramProtocol):
                 client.transport.write(data_point.encode())
 
 
-# TODO make nicer, use db etc
 async def main():
     loop = asyncio.get_running_loop()
 
