@@ -253,17 +253,19 @@ int LillyGoSIM800L::prepUDP(size_t length)
 
     modem.print("AT+CIPSEND=");
     modem.println(length);
+
+    udpLength = length;
     status = PREPPING_UDP;
     return 0;
 }
 
-int LillyGoSIM800L::sendUDP(const uint8_t *data, size_t length)
+int LillyGoSIM800L::sendUDP(const uint8_t *data)
 {
     if(getStatus() != UDP_READY){
         return 1;
     }
 
-    for (size_t i = 0; i < length; ++i)
+    for (size_t i = 0; i < udpLength; ++i)
     {
         modem.write(data[i]);
     }

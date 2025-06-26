@@ -99,7 +99,7 @@ void loopy()
     std::memcpy(&packet[10], &temperature, sizeof(float));
     std::memcpy(&packet[14], &pressure, sizeof(float));
 
-    comms.sendUDP(packet, AURP_SIZE);
+    comms.sendUDP(packet);
   }
 }
 

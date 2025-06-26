@@ -84,7 +84,7 @@ int DummyComms::connectUDP(const char *ip, const char *port)
     return 0;
 }
 
-int DummyComms::sendUDP(const uint8_t *data, size_t length)
+int DummyComms::sendUDP(const uint8_t *data)
 {
     if (status != UDP_READY)
     {
@@ -95,7 +95,6 @@ int DummyComms::sendUDP(const uint8_t *data, size_t length)
     logger.logln("> COMMS: send packet");
 
     (void)data;
-    (void)length;
 
     status = CONNECTED;
     return 0;
@@ -108,9 +107,7 @@ int DummyComms::prepUDP(size_t length)
         logger.logln("$ COMMS: [ERROR] NOT CONNECTED");
         return 1;
     }
-
-        (void)length; //TODO use this to check the data supplied in send
-
+        udpLength = length;
         logger.logln("> COMMS: UDP prepped");
 
     status = PREPPING_UDP;

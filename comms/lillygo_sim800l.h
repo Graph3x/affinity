@@ -17,7 +17,7 @@ public:
     int disconnect();
     int HTTPGet(const char *url);
     int connectUDP(const char *ip, const char *port);
-    int sendUDP(const uint8_t *data, size_t length);
+    int sendUDP(const uint8_t *data);
     int prepUDP(size_t length);
     int disconnectUDP();
 
@@ -30,4 +30,5 @@ private:
     int baudRate;
     HardwareSerial modem = HardwareSerial(1);
     int status = OFFLINE;
+    size_t udpLength;
 };
