@@ -1,122 +1,178 @@
-#include "comms/comms.h"
-#include "misc/logging.h"
-#include "pyro/pyro.h"
-#include "misc/timer.h"
-#include "sensors/sensors.h"
-#include "sensors/trajectory_controller.h"
+#include "lillygo_sim800l.h"
+#include "BMP280.h"
+#include "ADXL345.h"
+#include "gps.h"
+#include "millis_timer.h"
+#include "mosfetPyro.h"
+#include "arduino_logger.h"
+#include "trajectory_controller.h"
+#include "launch_pin.h"
 
-#include <assert.h>
 #include <cstring>
 #include <cstdint>
 
-#define AURP_VERSION 1
-#define AURP_SIZE 18
+#define LAUNCH_PIN 35
+#define BUZZER_PIN 15
+#define AURP_SIZE 65
+#define MULTI_SIZE 195
 
-const uint16_t version = 71;
+#define GPS_RX 13
+#define GPS_TX 14
 
-PrintLogger logger = PrintLogger();
+#define BACK_DEPLOY_TIME 9000
+#define SERVER_IP "ip"
 
-DummyComms comms = DummyComms(logger);
-DummyChannel pyro = DummyChannel(logger);
-DummyTimer timer = DummyTimer();
+LillyGoSIM800L comms = LillyGoSIM800L();
+ADXL345 accel = ADXL345();
+BMP280 bmp = BMP280();
+GPS gps = GPS();
+LaunchPin launchPin = LaunchPin(LAUNCH_PIN);
 
-int heightData[] = {0, 0, 0, 0, 0, 0, 2, 5, 7, 9, 15, 20, 36, 39, 41, 42, 41, 37, 34, 31, 28, 25, 22, 19, 16, 13, 11, 8, 5, 3};
-int accelUDData[] = {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
-int pinData[] = {1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+MillisTimer timer = MillisTimer();
+TrajectoryController trajectoryController = TrajectoryController(bmp);
 
-DummyArraySensor gpsHeight = DummyArraySensor(heightData, 30);
-DummyArraySensor baroHeight = DummyArraySensor(heightData, 30);
-DummyArraySensor accelUD = DummyArraySensor(accelUDData, 30);
-DummyArraySensor startPin = DummyArraySensor(pinData, 30);
+ArduinoLogger logger = ArduinoLogger(115200);
+SimpleMosfetChannel pyro = SimpleMosfetChannel(2);
 
-TrajectoryController trajectoryController = TrajectoryController(baroHeight, gpsHeight, accelUD);
+void buzz()
+{
+  digitalWrite(BUZZER_PIN, HIGH);
+  delay(2000);
+  digitalWrite(BUZZER_PIN, LOW);
+}
 
 void setup()
 {
-  while (comms.getStatus() != DISCONNECTED)
-  {
-    comms.powerOn();
-  }
+  delay(8000);
+  Serial.begin(115200);
+  
+  Serial.println();
 
-  while (comms.getStatus() != CONNECTED)
-  {
-    comms.connect();
-  }
+  bmp.calibrate();
+  gps.init(GPS_RX, GPS_TX);
+  Serial.println("sensors up");
 
-  comms.connectUDP("", "");
+  comms.powerOn();
+  comms.connect();
+  comms.connectUDP(SERVER_IP, "14959");
+  
+  Serial.println("comms up");
+
+  pinMode(BUZZER_PIN, OUTPUT);
+  buzz();
 }
 
-void loopy()
-{
-  timer.getTime();
+long lastTick = 0;
+long lastStatus = 0;
+uint8_t mpacket[MULTI_SIZE] = {0};
+int mwriter = 0;
 
-  if (timer.timeSinceLaunch() == 0 && startPin.readValue() == 0)
+int status = TrajectoryStatus::UNKNOWN;
+void loop()
+{
+  // READ DATA
+  float temp = bmp.readTemperature();
+  float height = bmp.readHeight();
+
+  struct AccelData accelData = accel.getAccel();
+  double accelx = accelData.x;
+  double accely = accelData.y;
+  double accelz = accelData.z;
+
+  gps.parseData();
+  double gpsAlt = gps.getAltitude();
+  double gpsLon = gps.getLon();
+  double gpsLat = gps.getLat();
+
+  char pinStatus = launchPin.getStatus();
+  Serial.println(digitalRead(LAUNCH_PIN));
+
+  // update status
+  if(millis() - lastStatus > 100){
+    status = trajectoryController.tick();
+  }
+
+  // add new packets
+  if (millis() - lastTick > 300)
   {
-    logger.logln("$ LAUNCH");
+    lastTick = millis();
+    Serial.println((int)pinStatus);
+
+    uint8_t packet[AURP_SIZE] = {0};
+    unsigned long timestamp = millis();
+    unsigned int start = 0;
+    std::memcpy(&packet, &timestamp, sizeof(unsigned long));
+    start += sizeof(unsigned long);
+
+    std::memcpy(&packet[start], &temp, sizeof(float));
+    start += sizeof(float);
+
+    std::memcpy(&packet[start], &height, sizeof(float));
+    start += sizeof(float);
+
+    std::memcpy(&packet[start], &accelx, sizeof(double));
+    start += sizeof(double);
+
+    std::memcpy(&packet[start], &accely, sizeof(double));
+    start += sizeof(double);
+
+    std::memcpy(&packet[start], &accelz, sizeof(double));
+    start += sizeof(double);
+
+    std::memcpy(&packet[start], &gpsAlt, sizeof(double));
+    start += sizeof(double);
+
+    std::memcpy(&packet[start], &gpsLon, sizeof(double));
+    start += sizeof(double);
+
+    std::memcpy(&packet[start], &gpsLat, sizeof(double));
+    start += sizeof(double);
+
+    std::memcpy(&packet[start], &pinStatus, sizeof(char));
+    start += sizeof(char);
+
+    std::memcpy(&packet[start], &status, sizeof(int));
+    start += sizeof(int);
+
+    std::memcpy(&mpacket[AURP_SIZE * (mwriter % 3)], &packet, AURP_SIZE);
+    mwriter++;
+  }
+
+  if (timer.timeSinceLaunch() == 0 && pinStatus == TRIGGERED)
+  {
     timer.launch();
     pyro.unlock();
   }
 
-  int status = trajectoryController.tick();
-  const char *stringStatus = statusToString(status);
-  logger.logln(stringStatus);
-
   // primary pyro
   if (status == DESCENDING && pyro.getStatus() == READY)
   {
-    logger.logln("$ PRIMARY PYRO TRIGGERED");
-    pyro.blow();
-    timer.blowPyro();
+    //pyro.blow(); experimental feature disabled for the first flight
+    //timer.blowPyro();
+    digitalWrite(BUZZER_PIN, HIGH);
   }
 
   // backup pyro
-  if (timer.timeSinceLaunch() > 20 && pyro.getStatus() == READY)
+  if (timer.timeSinceLaunch() > BACK_DEPLOY_TIME && pyro.getStatus() == READY)
   {
-    logger.logln("$ BACKUP PYRO TRIGGERED");
     pyro.blow();
     timer.blowPyro();
+    digitalWrite(BUZZER_PIN, HIGH);
   }
 
-  if(pyro.getStatus() == BLOWN && timer.timeSincePyro() > 5){
+  if (pyro.getStatus() == BLOWN && timer.timeSincePyro() > 5000)
+  {
     pyro.off();
   }
 
+  // little stupid but working async UDP
   if (comms.getStatus() == CONNECTED)
   {
-    comms.prepUDP(AURP_SIZE);
+    comms.prepUDP(MULTI_SIZE);
   }
 
-  else if (comms.getStatus() == UDP_READY)
+  if (comms.getStatus() == UDP_READY)
   {
-    uint8_t packet[AURP_SIZE];
-    unsigned long timestamp = timer.getTime();
-
-    float temperature = 0.07;
-    float pressure = 0.07;
-
-    std::memcpy(&packet, &version, sizeof(uint16_t));
-    std::memcpy(&packet[2], &timestamp, sizeof(unsigned long));
-    std::memcpy(&packet[10], &temperature, sizeof(float));
-    std::memcpy(&packet[14], &pressure, sizeof(float));
-
-    comms.sendUDP(packet);
+    comms.sendUDP(mpacket);
   }
-}
-
-int main()
-{
-  logger.logln("STARTED SETUP");
-  setup();
-  logger.logln("ENDED SETUP");
-
-  logger.logln("STARTED LOOP");
-  for (int i = 0; i < 30; i++)
-  {
-    loopy();
-  }
-  logger.logln("ENDED LOOP");
-
-  comms.disconnect();
-
-  return 0;
 }

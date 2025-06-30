@@ -11,9 +11,10 @@ TCP_PORT = 14960
 WS_PORT = 14961
 
 NORMAL_LOG = "affinity.db"
-MALFORMED_LOG = "malformed.db"
+RAW_LOG = "raw.bin"
 
-DATAGRAM_SIZE = 15
+DATAGRAM_SIZE = 65
+
 
 class TCPClientHandler(asyncio.Protocol):
     def __init__(self):
@@ -34,40 +35,46 @@ class TCPClientHandler(asyncio.Protocol):
 
 class UDPServerProtocol(asyncio.DatagramProtocol):
 
-    def parse_datagram(self, datagram) -> None | str:
+    def parse_datagram(self, datagram) -> str:
         try:
-            ushort_val, ulong_val, float_val, double_val, char_val = (
-                struct.unpack("<HLffB", datagram)
-            )
-            msg = f"{ushort_val}, {ulong_val}, {float_val}, {double_val}, {char_val}"
+            (
+                timestamp,
+                temp,
+                height,
+                accelx,
+                accely,
+                accelz,
+                gpsAlt,
+                gpsLon,
+                gpsLat,
+                launchPin,
+                status,
+            ) = struct.unpack("<Lffddddddbi", datagram)
+            msg = f"{timestamp}, {temp}C, {height}m, pin: {launchPin} status: {status}, accel: {accelx}, {accely}, {accelz} gps: {gpsAlt}, {gpsLon}, {gpsLat}"
 
         except:
-            return None
+            return ""
 
         return msg
-    
-    def parse_multi_datagram(self, datagram)-> tuple[bool, list[str]]:
+
+    def parse_multi_datagram(self, datagram) -> list[str]:
         start = 0
         end = DATAGRAM_SIZE
         datapoints = []
-        all_valid = False
         while end <= len(datagram):
             datapoint = self.parse_datagram(datagram[start:end])
-            if datapoints is not None:
+            if datapoint != "":
                 datapoints.append(datapoint + "\n")
-            else:
-                all_valid = True
             start += DATAGRAM_SIZE
             end += DATAGRAM_SIZE
-        return (all_valid, datapoints)
+        return datapoints
 
     def datagram_received(self, data, addr):
         print(f"Received UDP packet from {addr}: {data}")
-        malformed, data_points = self.parse_multi_datagram(data)
+        data_points = self.parse_multi_datagram(data)
 
-        if malformed:
-            with open(MALFORMED_LOG, "ab+") as f:
-                f.write(data + b"\n")
+        with open(RAW_LOG, "ab+") as f:
+            f.write(data + b"\n")
 
         with open(NORMAL_LOG, "a+") as f:
             f.writelines(data_points)

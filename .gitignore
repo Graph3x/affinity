@@ -4,4 +4,4 @@ todo.txt
 message.ino
 example
 ui/basic_backend/affinity.db
-ui/basic_backend/malformed.db
+ui/basic_backend/raw.bin

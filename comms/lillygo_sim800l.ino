@@ -10,6 +10,7 @@ void LillyGoSIM800L::CheckResponse(String response, String expected)
         {
             Serial.println(response);
         }
+        status = DOWN;
     }
 }
 
@@ -26,15 +27,29 @@ LillyGoSIM800L::LillyGoSIM800L(int rst, int pwrkey, int powerOn,
 
 String LillyGoSIM800L::readLine()
 {
-    if (modem.available())
+    while (modem.available())
     {
-        String line = modem.readStringUntil('\n');
-        line.trim();
-        return line;
-    }
+        char c = modem.read();
+        
+        if (c == '\n')
+        {
+            String line = buffer;
+            buffer = "";
+            line.trim();
+            return line;
+        }
 
+        buffer += c;
+
+        if (buffer == ">" || buffer == "> ")
+        {
+            buffer = "";
+            return ">";
+        }
+    }
     return "";
 }
+
 
 String LillyGoSIM800L::waitForLine(long timeout)
 {
@@ -84,25 +99,18 @@ int LillyGoSIM800L::powerOn()
     modem.println("ATE0");
     CheckResponse(waitForLine(), "ATE0");
     CheckResponse(waitForLine());
-
     delay(5000);
 
-    modem.println("AT+CGATT=1");
-    CheckResponse(waitForLine());
-    modem.println("AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"");
-    CheckResponse(waitForLine());
-    modem.println("AT+SAPBR=3,1,\"APN\",\"internet\"");
-    CheckResponse(waitForLine());
-
-    status = DISCONNECTED;
+    status = (status != DOWN) ? DISCONNECTED : OFFLINE;
     return 0;
 }
 
 int LillyGoSIM800L::getStatus()
 {
+    String line = readLine();
     if (status == COMMS_BUSY)
     {
-        if (readLine() != "")
+        if (line != "")
         {
             status = CONNECTED;
         }
@@ -110,7 +118,7 @@ int LillyGoSIM800L::getStatus()
 
     if (status == PREPPING_UDP)
     {
-        if (readLine() == ">")
+        if (line == ">")
         {
             status = UDP_READY;
         }
@@ -126,13 +134,19 @@ int LillyGoSIM800L::connect()
         Serial.println("$ COMMS: [ERROR] NOT DISCONNECTED");
         return 1;
     }
+    modem.println("AT+CGATT=1");
+    CheckResponse(waitForLine());
+    modem.println("AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"");
+    CheckResponse(waitForLine());
+    modem.println("AT+SAPBR=3,1,\"APN\",\"internet\"");
+    CheckResponse(waitForLine());
 
     modem.println("AT+SAPBR=1,1");
     CheckResponse(waitForLine());
 
     delay(3000);
 
-    status = CONNECTED;
+    status = (status != DOWN) ? CONNECTED : DISCONNECTED;
     return 0;
 }
 
@@ -151,7 +165,7 @@ int LillyGoSIM800L::disconnect()
     modem.println("AT+SAPBR=0,1");
     CheckResponse(waitForLine());
 
-    status = DISCONNECTED;
+    status = (status != DOWN) ? DISCONNECTED : CONNECTED;
     return 0;
 }
 
@@ -189,6 +203,8 @@ int LillyGoSIM800L::HTTPGet(const char *url)
 
     modem.println("AT+HTTPTERM");
     CheckResponse(waitForLine());
+
+    status = CONNECTED;
     return response.toInt();
 }
 
@@ -230,6 +246,8 @@ int LillyGoSIM800L::connectUDP(const char *ip, const char *port)
     modem.println(connCommand);
     CheckResponse(waitForLine());
     CheckResponse(waitForLine(), "CONNECT OK");
+
+    status = CONNECTED;
     return 0;
 }
 
@@ -257,7 +275,7 @@ int LillyGoSIM800L::prepUDP(size_t length)
 
 int LillyGoSIM800L::sendUDP(const uint8_t *data)
 {
-    if (getStatus() != UDP_READY)
+    if (getStatus() != UDP_READY || millis() - lastSend < 1000)
     {
         return 1;
     }
@@ -272,6 +290,8 @@ int LillyGoSIM800L::sendUDP(const uint8_t *data)
     {
         status = COMMS_BUSY;
     };
+
     status = CONNECTED;
+    lastSend = millis();
     return 0;
 }

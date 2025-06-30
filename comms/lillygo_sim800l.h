@@ -11,7 +11,7 @@ public:
     void CheckResponse(String response, String expected = "OK");
     String readLine();
     String waitForLine(long timeout = 5000);
-
+    
     int powerOn();
     int getStatus();
     int connect();
@@ -35,4 +35,7 @@ private:
     int status = OFFLINE;
     size_t udpLength;
     bool commsDebug = true;
+    unsigned long lastSend = 0;
+    String buffer;
+
 };
